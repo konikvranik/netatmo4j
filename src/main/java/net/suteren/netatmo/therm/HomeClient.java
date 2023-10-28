@@ -6,18 +6,16 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections4.IterableUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import net.suteren.netatmo.auth.AuthClient;
 import net.suteren.netatmo.client.AbstractApiClient;
 import net.suteren.netatmo.client.ConnectionException;
 import net.suteren.netatmo.client.NetatmoResponse;
+import net.suteren.netatmo.domain.therm.Home;
 import net.suteren.netatmo.domain.therm.HomesData;
+import net.suteren.netatmo.domain.therm.Room;
 
 public class HomeClient extends AbstractApiClient<InputStream> {
 	public HomeClient(AuthClient auth) {
@@ -28,78 +26,60 @@ public class HomeClient extends AbstractApiClient<InputStream> {
 		return OBJECT_MAPPER.treeToValue(OBJECT_MAPPER.readValue(get("homesdata"), NetatmoResponse.class).body(), HomesData.class);
 	}
 
-	public List<ObjectNode> getHomes() throws IOException, URISyntaxException, InterruptedException, ConnectionException {
-		return IterableUtils.toList(OBJECT_MAPPER.readTree(get("homesdata")).at("/body/homes")).stream()
-			.map(ObjectNode.class::cast)
-			.collect(Collectors.toList());
+	public List<Home> getHomes() throws IOException, URISyntaxException, InterruptedException, ConnectionException {
+		return getHomesData().homes();
 	}
 
-	public List<ObjectNode> listHomes() throws IOException, URISyntaxException, InterruptedException, ConnectionException {
+	public Home getHome(final String homeId) throws IOException, URISyntaxException, InterruptedException, ConnectionException {
 		return getHomes().stream()
-			.peek(n -> {
-					n.remove("schedules");
-					n.remove("rooms");
-					n.remove("modules");
-				}
-			)
-			.toList();
-	}
-
-	public ObjectNode getHome(final String homeId) throws IOException, URISyntaxException, InterruptedException, ConnectionException {
-		return getHomes().stream()
-			.filter(h -> Objects.equals(h.findValue("id").textValue(), homeId))
+			.filter(h -> Objects.equals(h.id(), homeId))
 			.findAny()
 			.orElse(null);
-	}
-
-	private void test(ObjectNode h) {
-
 	}
 
 	public JsonNode getStatus(java.lang.String homeId) throws IOException, URISyntaxException, InterruptedException, ConnectionException {
 		return OBJECT_MAPPER.readTree(get("homestatus", Map.of("home_id", homeId)));
 	}
 
-	public List<ObjectNode> getRooms(java.lang.String homeId) throws IOException, URISyntaxException, InterruptedException, ConnectionException {
+	public List<Room> getRooms(String homeId) throws IOException, URISyntaxException, InterruptedException, ConnectionException {
 		return getRooms(getHome(homeId));
 	}
 
-	public static List<ObjectNode> getRooms(ObjectNode homeData) {
-		return IterableUtils.toList(homeData.at("/rooms")).stream()
-			.map(ObjectNode.class::cast)
+	public static List<Room> getRooms(Home homeData) {
+		return homeData.rooms().stream()
 			.toList();
 	}
 
-	public ObjectNode getRoom(String homeId, final String roomId)
+	public Room getRoom(String homeId, final String roomId)
 		throws IOException, URISyntaxException, InterruptedException, ConnectionException {
 		return getRoom(getHome(homeId), roomId);
 	}
 
-	public static ObjectNode getRoom(ObjectNode homeData, String roomId) {
+	public static Room getRoom(Home homeData, String roomId) {
 		return getRoom(getRooms(homeData), roomId);
 
 	}
 
-	public static ObjectNode getRoom(List<ObjectNode> rooms, final String roomId) {
+	public static Room getRoom(List<Room> rooms, final String roomId) {
 		return rooms.stream()
-			.filter(r -> Objects.equals(r.at("/id").textValue(), roomId))
+			.filter(r -> Objects.equals(r.id(), roomId))
 			.findAny()
 			.orElse(null);
 	}
 
-	public ObjectNode getRoomByName(String homeId, final String roomId)
+	public Room getRoomByName(String homeId, final String roomId)
 		throws IOException, URISyntaxException, InterruptedException, ConnectionException {
 		return getRoomByName(getHome(homeId), roomId);
 	}
 
-	public static ObjectNode getRoomByName(ObjectNode homeData, String roomId) {
+	public static Room getRoomByName(Home homeData, String roomId) {
 		return getRoomByName(getRooms(homeData), roomId);
 
 	}
 
-	public static ObjectNode getRoomByName(List<ObjectNode> rooms, final String roomId) {
+	public static Room getRoomByName(List<Room> rooms, final String roomId) {
 		return rooms.stream()
-			.filter(r -> Objects.equals(r.at("/name").textValue(), roomId))
+			.filter(r -> Objects.equals(r.name(), roomId))
 			.findAny()
 			.orElse(null);
 	}

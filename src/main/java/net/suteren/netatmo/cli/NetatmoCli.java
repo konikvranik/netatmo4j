@@ -83,15 +83,15 @@ public class NetatmoCli implements Callable<Integer> {
 				case "homes":
 					switch (format) {
 					case "text":
-						System.out.println(homeClient.listHomes().stream()
-							.map(h -> "%25s : %s".formatted(h.at("/id").textValue(), h.at("/name").textValue()))
+						System.out.println(homeClient.getHomes().stream()
+							.map(h -> "%25s : %s".formatted(h.id(), h.name()))
 							.collect(Collectors.joining("\n")));
 						break;
 					case "json":
-						System.out.println(OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homeClient.listHomes()));
+						System.out.println(OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homeClient.getHomes()));
 						break;
 					case "yaml":
-						System.out.println(YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homeClient.listHomes()));
+						System.out.println(YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homeClient.getHomes()));
 						break;
 					}
 					break;
@@ -99,18 +99,14 @@ public class NetatmoCli implements Callable<Integer> {
 					switch (format) {
 					case "text":
 						System.out.println(homeClient.getRooms(homeId).stream()
-							.map(h -> "%15s : %s".formatted(h.at("/id").textValue(), h.at("/name").textValue()))
+							.map(h -> "%15s : %s".formatted(h.id(), h.name()))
 							.collect(Collectors.joining("\n")));
 						break;
 					case "json":
-						System.out.println(OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homeClient.getRooms(homeId).stream()
-							.peek(r -> r.remove("'module_ids'"))
-							.toList()));
+						System.out.println(OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homeClient.getRooms(homeId)));
 						break;
 					case "yaml":
-						System.out.println(YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homeClient.getRooms(homeId).stream()
-							.peek(r -> r.remove("'module_ids'"))
-							.toList()));
+						System.out.println(YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homeClient.getRooms(homeId)));
 						break;
 					}
 					break;

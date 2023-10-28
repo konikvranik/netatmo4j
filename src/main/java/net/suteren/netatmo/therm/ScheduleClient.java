@@ -8,15 +8,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.apache.commons.collections4.IterableUtils;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import lombok.SneakyThrows;
 import net.suteren.netatmo.auth.AuthClient;
 import net.suteren.netatmo.client.AbstractApiClient;
 import net.suteren.netatmo.client.ConnectionException;
 import net.suteren.netatmo.client.NetatmoResponse;
+import net.suteren.netatmo.domain.therm.Home;
 import net.suteren.netatmo.domain.therm.Schedule;
 
 public class ScheduleClient extends AbstractApiClient<InputStream> {
@@ -34,18 +30,15 @@ public class ScheduleClient extends AbstractApiClient<InputStream> {
 		return getSchedules(homeClient.getHome(homeId));
 	}
 
-	public static List<Schedule> getSchedules(ObjectNode homeData) {
-		return IterableUtils.toList(homeData.at("/schedules")).stream()
-			.map(ObjectNode.class::cast)
-			.map(ScheduleClient::readSchedule)
-			.toList();
+	public static List<Schedule> getSchedules(Home homeData) {
+		return homeData.schedules();
 	}
 
 	public Schedule getSchedule(String homeId, String scheduleId) throws IOException, URISyntaxException, InterruptedException, ConnectionException {
 		return getSchedule(getSchedules(homeId), scheduleId);
 	}
 
-	public static Schedule getSchedule(ObjectNode homeData, String scheduleId) {
+	public static Schedule getSchedule(Home homeData, String scheduleId) {
 		return getSchedule(getSchedules(homeData), scheduleId);
 	}
 
@@ -60,7 +53,7 @@ public class ScheduleClient extends AbstractApiClient<InputStream> {
 		return getScheduleByName(getSchedules(homeId), name);
 	}
 
-	public static Schedule getScheduleByName(ObjectNode homeData, String name) {
+	public static Schedule getScheduleByName(Home homeData, String name) {
 		return getScheduleByName(getSchedules(homeData), name);
 	}
 
@@ -93,9 +86,5 @@ public class ScheduleClient extends AbstractApiClient<InputStream> {
 		return OBJECT_MAPPER.readValue(
 			post("switchhomeschedule", null, queryParams(Map.of("home_id", homeId, "schedule_id", scheduleId)), URLENCODED_CHARSET_UTF_8),
 			NetatmoResponse.class);
-	}
-
-	@SneakyThrows private static Schedule readSchedule(ObjectNode o) {
-		return OBJECT_MAPPER.treeToValue(o, Schedule.class);
 	}
 }
