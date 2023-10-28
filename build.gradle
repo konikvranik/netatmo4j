@@ -1,5 +1,6 @@
 plugins {
 	id 'java-library'
+	id "maven-publish"
 	id 'io.freefair.lombok' version '8.4'
 }
 
@@ -25,4 +26,35 @@ dependencies {
 
 compileJava {
 	options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
+}
+
+tasks.register('fatJar', Jar) {
+	manifest {
+		attributes 'Main-Class': 'net.suteren.netatmo.cli.NetatmoCli'
+	}
+	archiveClassifier = 'fatjar'
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+	with jar
+	doLast {
+		outputs.files.each { it.setExecutable(true) }
+	}
+}
+
+publishing {
+	repositories {
+		maven {
+			name = "GitHubPackages"
+			url = uri("https://maven.pkg.github.com/konikvranik/netatmo4j")
+			credentials {
+				username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+				password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+			}
+		}
+	}
+	publications {
+		gpr(MavenPublication) {
+			from(components.java)
+		}
+	}
 }

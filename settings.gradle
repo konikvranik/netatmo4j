@@ -3,3 +3,4 @@ pluginManagement {
 		mavenCentral()
 	}
 }
+rootProject.name = 'netatmo4j'
