@@ -7,6 +7,7 @@ import groovy.transform.Field
 import net.sourceforge.plantuml.FileFormat
 import net.sourceforge.plantuml.FileFormatOption
 import net.sourceforge.plantuml.SourceStringReader
+import net.sourceforge.plantuml.core.DiagramDescription
 import net.suteren.netatmo.domain.therm.Schedule
 import net.suteren.netatmo.domain.therm.TimetableEntry
 import org.slf4j.Logger
@@ -21,6 +22,9 @@ import java.nio.charset.Charset
 
 @CommandLine.Parameters(arity = "1", paramLabel = "SECHEDULE", description = "Schedule JSON file")
 @Field File scheduleFile
+
+@CommandLine.Option(names = ["-i", "--renderImage"], description = "Render image or get plantuml source")
+@Field boolean renderImage = false
 
 @CommandLine.Option(names = ["-d", "--debug"], description = "Enable verbose logging")
 @Field boolean debug = false
@@ -56,20 +60,23 @@ ${renderDays(days)}
 @enduml
 """
 
-println source
+if (!renderImage) {
+	println source
+} else {
 //======================================================================//
 
-SourceStringReader reader = new SourceStringReader(source);
-final ByteArrayOutputStream os = new ByteArrayOutputStream();
+	SourceStringReader reader = new SourceStringReader(source);
+	final ByteArrayOutputStream os = new ByteArrayOutputStream();
 // Write the first image to "os"
-String desc = reader.generateImage(os, new FileFormatOption(FileFormat.SVG));
-log.info(desc)
-os.close();
+	DiagramDescription desc = reader.outputImage(os, new FileFormatOption(FileFormat.SVG));
+	log.info(desc.toString())
+	os.close();
 
 // The XML is stored into svg
-final String svg = new String(os.toByteArray(), Charset.forName("UTF-8"));
+	final String svg = new String(os.toByteArray(), Charset.forName("UTF-8"));
 
-log.info(svg)
+	println svg
+}
 
 String renderDays(Map<BigDecimal, List<TimetableEntry>> days) {
 	days.collect { d, t ->
