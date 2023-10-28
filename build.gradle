@@ -19,10 +19,10 @@ dependencies {
 	implementation 'org.apache.commons:commons-collections4:4.4'
 	implementation 'info.picocli:picocli:4.7.3'
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.1'
+	implementation 'org.apache.ivy:ivy:2.5.1'
 	implementation 'org.apache.groovy:groovy:4.0.14'
 	implementation 'org.apache.groovy:groovy-json:4.0.14'
 	implementation 'org.apache.groovy:groovy-yaml:4.0.14'
-	implementation 'org.apache.ivy:ivy:2.5.1'
 	implementation 'info.picocli:picocli-groovy:4.7.3'
 
 	annotationProcessor 'info.picocli:picocli-codegen:4.7.5'
