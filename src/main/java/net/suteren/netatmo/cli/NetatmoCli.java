@@ -76,20 +76,10 @@ public class NetatmoCli implements Callable<Integer> {
 				homeId = cfg.homeId();
 			}
 
+			HomeClient homeClient = new HomeClient(authClient);
 			switch (command) {
 			case "list":
-				HomeClient homeClient = new HomeClient(authClient);
 				switch (arguments[0]) {
-				case "config":
-					switch (format) {
-					case "yaml":
-						System.out.println(YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homeClient.getConfig()));
-						break;
-					default:
-						System.out.println(OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homeClient.getConfig()));
-						break;
-					}
-					break;
 				case "homes":
 					switch (format) {
 					case "text":
@@ -163,6 +153,23 @@ public class NetatmoCli implements Callable<Integer> {
 						System.out.println(
 							YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(new ScheduleClient(authClient).getSchedules(homeId).stream()
 								.toList()));
+						break;
+					}
+					break;
+				case "homesdata":
+					switch (format) {
+					case "text":
+						System.out.println(homeClient.getHomesData()
+							.homes().stream()
+							.map(h -> "%25s : %s".formatted(h.id(), h.name()))
+							.collect(Collectors.joining("\n")));
+						break;
+					case "json":
+						System.out.println(
+							OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homeClient.getHomesData()));
+						break;
+					case "yaml":
+						System.out.println(YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homeClient.getHomesData()));
 						break;
 					}
 					break;

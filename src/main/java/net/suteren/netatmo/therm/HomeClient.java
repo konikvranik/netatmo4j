@@ -16,16 +16,16 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.suteren.netatmo.auth.AuthClient;
 import net.suteren.netatmo.client.AbstractApiClient;
 import net.suteren.netatmo.client.ConnectionException;
+import net.suteren.netatmo.client.NetatmoResponse;
+import net.suteren.netatmo.domain.therm.HomesData;
 
 public class HomeClient extends AbstractApiClient<InputStream> {
 	public HomeClient(AuthClient auth) {
 		super(auth);
 	}
 
-	public ObjectNode getConfig() throws IOException, URISyntaxException, InterruptedException, ConnectionException {
-		ObjectNode object = (ObjectNode) OBJECT_MAPPER.readTree(get("homesdata"));
-		((ObjectNode) object.at("/body")).remove("homes");
-		return object;
+	public HomesData getHomesData() throws IOException, URISyntaxException, InterruptedException, ConnectionException {
+		return OBJECT_MAPPER.treeToValue(OBJECT_MAPPER.readValue(get("homesdata"), NetatmoResponse.class).body(), HomesData.class);
 	}
 
 	public List<ObjectNode> getHomes() throws IOException, URISyntaxException, InterruptedException, ConnectionException {
