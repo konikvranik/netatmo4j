@@ -1,4 +1,4 @@
-package netatmo.domain;
+package net.suteren.netatmo.domain;
 
 record Room(
 	String id,

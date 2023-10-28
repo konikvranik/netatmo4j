@@ -1,4 +1,4 @@
-package netatmo.client;
+package net.suteren.netatmo.client;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -7,15 +7,15 @@ import java.util.Map;
 
 import org.apache.commons.collections4.MapUtils;
 
-import netatmo.auth.AuthClient;
+import net.suteren.netatmo.auth.AuthClient;
 
-public class AbstractApiClient extends AbstractNetatmoClient {
+public class AbstractApiClient<T> extends AbstractNetatmoClient<T> {
 	public AbstractApiClient(AuthClient auth) {
 		this.auth = auth;
 	}
 
 	@Override
-	protected Object callNetatmo(String method, String path, Object content, String contentType,
+	protected T callNetatmo(String method, String path, Object content, String contentType,
 		Map<String, String> params, Map<String, String> headers)
 		throws IOException, ConnectionException, URISyntaxException, InterruptedException {
 		if (MapUtils.isEmpty(headers)) {

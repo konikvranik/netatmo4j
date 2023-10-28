@@ -1,4 +1,4 @@
-package netatmo.auth;
+package net.suteren.netatmo.auth;
 
 import java.awt.Desktop;
 import java.io.IOException;

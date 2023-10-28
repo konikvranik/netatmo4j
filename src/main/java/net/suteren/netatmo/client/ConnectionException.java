@@ -1,4 +1,4 @@
-package netatmo.client;
+package net.suteren.netatmo.client;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

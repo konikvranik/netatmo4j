@@ -1,4 +1,4 @@
-package netatmo.client;
+package net.suteren.netatmo.client;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,64 +16,68 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Setter @Getter @Slf4j
-public abstract class AbstractNetatmoClient {
+public abstract class AbstractNetatmoClient<T> {
+
+	protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	public static final String NETATMO_BASE_URL = "https://api.netatmo.com";
 	private HttpURLConnection connection;
 
-	public Object post(String path, Map<String, String> params, Object content,
+	public T post(String path, Map<String, String> params, Object content,
 		String contentType, Map<String, String> headers) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
 		return callNetatmo("POST", path, content, contentType, params, headers);
 	}
 
-	public Object post(String path, Map<String, String> params, Object content,
+	public T post(String path, Map<String, String> params, Object content,
 		String contentType) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
 		return post(path, params, content, contentType, null);
 	}
 
-	public Object post(String path, Map<String, String> params, Object content)
+	public T post(String path, Map<String, String> params, Object content)
 		throws IOException, ConnectionException, URISyntaxException, InterruptedException {
 		return post(path, params, content, null, null);
 	}
 
-	public Object post(String path, Map<String, String> params) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
+	public T post(String path, Map<String, String> params) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
 		return post(path, params, null, null, null);
 	}
 
-	public Object post(String path) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
+	public T post(String path) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
 		return post(path, null, null, null, null);
 	}
 
-	public Object get(String path, Map<String, String> params, Object content,
+	public T get(String path, Map<String, String> params, Object content,
 		String contentType, Map<String, String> headers) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
 		return callNetatmo("GET", path, content, contentType, params, headers);
 	}
 
-	public Object get(String path, Map<String, String> params, Object content,
+	public T get(String path, Map<String, String> params, Object content,
 		String contentType) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
 		return get(path, params, content, contentType, null);
 	}
 
-	public Object get(String path, Map<String, String> params, Object content)
+	public T get(String path, Map<String, String> params, Object content)
 		throws IOException, ConnectionException, URISyntaxException, InterruptedException {
 		return get(path, params, content, null, null);
 	}
 
-	public Object get(String path, Map<String, String> params) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
+	public T get(String path, Map<String, String> params) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
 		return get(path, params, null, null, null);
 	}
 
-	public Object get(String path) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
+	public T get(String path) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
 		return get(path, null, null, null, null);
 	}
 
-	protected Object callNetatmo(String method, String path, Object content, String contentType,
+	protected T callNetatmo(String method, String path, Object content, String contentType,
 		Map<String, String> params, Map<String, String> headers)
 		throws IOException, ConnectionException, URISyntaxException, InterruptedException {
 		connection = ((HttpURLConnection) (new URL(constructUrl(path, params)).openConnection()));
@@ -103,7 +107,7 @@ public abstract class AbstractNetatmoClient {
 		}
 
 		if (connection.getResponseCode() == 200) {
-			return connection.getContent();
+			return (T) connection.getContent();
 		} else {
 			throw new ConnectionException(connection);
 		}

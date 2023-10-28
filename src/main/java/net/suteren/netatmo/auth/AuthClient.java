@@ -1,8 +1,9 @@
-package netatmo.auth;
+package net.suteren.netatmo.auth;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -16,17 +17,16 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.Getter;
 import lombok.Setter;
-import netatmo.client.AbstractNetatmoClient;
-import netatmo.client.ConnectionException;
+import net.suteren.netatmo.client.AbstractNetatmoClient;
+import net.suteren.netatmo.client.ConnectionException;
 
 import static java.nio.file.attribute.PosixFilePermission.OWNER_READ;
 import static java.nio.file.attribute.PosixFilePermission.OWNER_WRITE;
 
-public class AuthClient extends AbstractNetatmoClient {
+public class AuthClient extends AbstractNetatmoClient<InputStream> {
 
 	private final String clientId;
 	private final Object scope;
@@ -37,7 +37,6 @@ public class AuthClient extends AbstractNetatmoClient {
 	private final String clientSecret;
 	private final OAuth2 oauth;
 	private final File authFile;
-	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	public AuthClient(String clientId, String clientSecret, Object scope, String state, File authFile) throws IOException {
 		this.authFile = authFile;
@@ -97,7 +96,7 @@ public class AuthClient extends AbstractNetatmoClient {
 
 	private void token(LinkedHashMap<String, String> parameters) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
 		JsonNode response =
-			OBJECT_MAPPER.readTree((String) post("oauth2/token", null, queryParams(parameters), "application/x-www-form-urlencoded;charset=UTF-8"));
+			OBJECT_MAPPER.readTree(post("oauth2/token", null, queryParams(parameters), "application/x-www-form-urlencoded;charset=UTF-8"));
 		accessToken = response.at("access_token").textValue();
 		refreshToken = response.at("refresh_token").textValue();
 		validUntil = Instant.now().plusSeconds(response.at("expires_in").longValue());
