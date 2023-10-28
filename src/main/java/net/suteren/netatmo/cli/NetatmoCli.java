@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.suteren.netatmo.ZonePresets;
 import net.suteren.netatmo.auth.AuthClient;
 import net.suteren.netatmo.client.ConnectionException;
+import net.suteren.netatmo.client.NetatmoResponse;
 import net.suteren.netatmo.domain.therm.Schedule;
 import net.suteren.netatmo.therm.HomeClient;
 import net.suteren.netatmo.therm.ScheduleClient;
@@ -181,7 +182,8 @@ public class NetatmoCli implements Callable<Integer> {
 								.toList()).build())
 							.toList()).build();
 					try {
-						scheduleClient.setSchedule(schedule, homeId);
+						NetatmoResponse response = scheduleClient.updateSchedule(schedule, homeId);
+						log.info("{}: {} in {} seconds", response.getServerTime().toString(), response.status(), response.timeExec());
 					} catch (IOException | InterruptedException | URISyntaxException e) {
 						log.error(e.getMessage(), e);
 						throw new RuntimeException(e);

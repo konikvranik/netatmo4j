@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Setter @Getter @Slf4j
 public abstract class AbstractNetatmoClient<T> {
 
+	public static final String URLENCODED_CHARSET_UTF_8 = "application/x-www-form-urlencoded;charset=UTF-8";
 	protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	public static final String NETATMO_BASE_URL = "https://api.netatmo.com";
