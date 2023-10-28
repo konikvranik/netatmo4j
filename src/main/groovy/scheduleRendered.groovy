@@ -7,7 +7,6 @@ import groovy.transform.Field
 import net.sourceforge.plantuml.FileFormat
 import net.sourceforge.plantuml.FileFormatOption
 import net.sourceforge.plantuml.SourceStringReader
-import net.sourceforge.plantuml.core.DiagramDescription
 import net.suteren.netatmo.domain.therm.Schedule
 import net.suteren.netatmo.domain.therm.TimetableEntry
 import org.slf4j.Logger
@@ -15,8 +14,11 @@ import org.slf4j.LoggerFactory
 import org.slf4j.simple.SimpleLogger
 import picocli.CommandLine
 
-import java.nio.charset.Charset
 import java.util.concurrent.atomic.AtomicInteger
+
+@Field final static JSON_MAPPER = JsonMapper.builder().build()
+@Field final static Map<Integer, String> ZONE_COLORS = [0: "GreenYellow", 1: "MediumSlateBlue", 2: "yellow", 3: "orange", 4: "cyan"]
+@Field Map<Integer, String> zoneNames
 
 @Field final Logger log = LoggerFactory.getLogger('scheduleRenderer')
 @Field public static final int MINUTES_PER_DAY = 1440
@@ -33,9 +35,6 @@ if (debug) {
 	System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE")
 }
 
-@Field final static JSON_MAPPER = JsonMapper.builder().build()
-@Field Map<Integer, String> zoneNames
-@Field Map<Integer, String> zoneColors = [0: "GreenYellow", 1: "MediumSlateBlue", 2: "yellow", 3: "orange", 4: "cyan"]
 
 Schedule schedule = JSON_MAPPER.readValue(scheduleFile, Schedule)
 zoneNames = schedule.zones().collectEntries { [(it.id()): it.name()] }
@@ -63,28 +62,23 @@ ${renderDays(days)}
 if (!renderImage) {
 	println source
 } else {
-//======================================================================//
-
-	SourceStringReader reader = new SourceStringReader(source);
-	final ByteArrayOutputStream os = new ByteArrayOutputStream();
-// Write the first image to "os"
-	DiagramDescription desc = reader.outputImage(os, new FileFormatOption(FileFormat.SVG));
-	log.info(desc.toString())
-	os.close();
-
-// The XML is stored into svg
-	final String svg = new String(os.toByteArray(), Charset.forName("UTF-8"));
-
-	println svg
+	final ByteArrayOutputStream os = new ByteArrayOutputStream()
+	log.info(new SourceStringReader(source).outputImage(os, new FileFormatOption(FileFormat.SVG)).toString())
+	os.close()
+	println os.toString('UTF-8')
 }
 
-String renderDays(Map<BigDecimal, List<TimetableEntry>> days) {
+private String renderDays(Map<Integer, List<TimetableEntry>> days) {
 	AtomicInteger last = new AtomicInteger(days.get(0).first().zoneId())
 	days.collect { d, t -> "@d${d}\n${renderTimes(t, last)}" }.join('\n\n')
 }
 
-String renderTimes(List<TimetableEntry> timetableEntries, AtomicInteger last) {
-	"0:00:00 is \"${zoneNames[last.get()]}\" #${zoneColors[last.getAndSet(timetableEntries.last().zoneId())]}\n" + timetableEntries.collect { "${offsetToTime(it)} is \"${zoneNames[it.zoneId()]}\" #${zoneColors[it.zoneId()]}" }.join('\n') + "\n24:00:0 is {hidden}"
+private String renderTimes(List<TimetableEntry> timetableEntries, AtomicInteger last) {
+	"0:00:00 is \"${zoneNames[last.get()]}\" #${getColor(last.getAndSet(timetableEntries.last().zoneId()))}\n" + timetableEntries.collect { "${offsetToTime(it)} is \"${zoneNames[it.zoneId()]}\" #${getColor(it.zoneId())}" }.join('\n') + "\n24:00:0 is {hidden}"
+}
+
+private static String getColor(int set) {
+	ZONE_COLORS[set] ?: "Lavender"
 }
 
 private static String offsetToTime(TimetableEntry it) {
