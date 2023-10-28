@@ -16,6 +16,7 @@ import org.slf4j.simple.SimpleLogger
 import picocli.CommandLine
 
 import java.nio.charset.Charset
+import java.util.concurrent.atomic.AtomicInteger
 
 @Field final Logger log = LoggerFactory.getLogger('scheduleRenderer')
 @Field public static final int MINUTES_PER_DAY = 1440
@@ -54,9 +55,8 @@ concise "Fr" as d4
 concise "Sa" as d5
 concise "Fr" as d6
 
-${initDays(days)}
-
 ${renderDays(days)}
+
 @enduml
 """
 
@@ -79,29 +79,15 @@ if (!renderImage) {
 }
 
 String renderDays(Map<BigDecimal, List<TimetableEntry>> days) {
-	days.collect { d, t ->
-		"""
-@d${d}
-${renderTimes(t)}
-"""
-	}
-			.join('\n\n')
+	AtomicInteger last = new AtomicInteger(days.get(0).first().zoneId())
+	days.collect { d, t -> "@d${d}\n${renderTimes(t, last)}" }.join('\n\n')
 }
 
-String renderTimes(List<TimetableEntry> timetableEntries) {
-	timetableEntries.collect { "${offsetToTime(it)} is \"${zoneNames[it.zoneId()]}\" #${zoneColors[it.zoneId()]}" }
-			.join('\n')
+String renderTimes(List<TimetableEntry> timetableEntries, AtomicInteger last) {
+	"0:00:00 is \"${zoneNames[last.get()]}\" #${zoneColors[last.getAndSet(timetableEntries.last().zoneId())]}\n" + timetableEntries.collect { "${offsetToTime(it)} is \"${zoneNames[it.zoneId()]}\" #${zoneColors[it.zoneId()]}" }.join('\n') + "\n24:00:0 is {hidden}"
 }
 
 private static String offsetToTime(TimetableEntry it) {
 	def minutes = it.mOffset() % MINUTES_PER_DAY
 	"${minutes / 60 as int}:${minutes % 60}:00"
-}
-
-String initDays(Map<Integer, List<TimetableEntry>> days) {
-	days
-			.findAll { it.key < 6 }
-			.collect { d, t -> "d${d + 1} is \"${zoneNames[(t.last().zoneId())]}\" #${zoneColors[t.last().zoneId()]}" }
-			.join('\n')
-
 }
