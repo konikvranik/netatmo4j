@@ -97,9 +97,9 @@ public class AuthClient extends AbstractNetatmoClient<InputStream> {
 	private void token(LinkedHashMap<String, String> parameters) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
 		JsonNode response =
 			OBJECT_MAPPER.readTree(post("oauth2/token", null, queryParams(parameters), "application/x-www-form-urlencoded;charset=UTF-8"));
-		accessToken = response.at("access_token").textValue();
-		refreshToken = response.at("refresh_token").textValue();
-		validUntil = Instant.now().plusSeconds(response.at("expires_in").longValue());
+		accessToken = response.at("/access_token").textValue();
+		refreshToken = response.at("/refresh_token").textValue();
+		validUntil = Instant.now().plusSeconds(response.at("/expires_in").longValue());
 		LinkedHashMap<String, Serializable> result = new LinkedHashMap<String, Serializable>(5);
 		result.put("access_token", getAccessToken());
 		result.put("refresh_token", getRefreshToken());

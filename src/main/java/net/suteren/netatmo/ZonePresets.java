@@ -1,50 +1,61 @@
-package net.suteren.netatmo
+package net.suteren.netatmo;
 
-class ZonePresets {
-	Map<String, Map<String, PresenceMode>> modes
-	private final Map<String, Map<String, Integer>> rooms
-	private final int day
-	private final int night
-	private final int away
+import java.util.Map;
+import java.util.Optional;
 
+import net.suteren.netatmo.cli.CliCfg;
+import net.suteren.netatmo.cli.RoomCfg;
 
-	ZonePresets(Map cfg) {
-		rooms = cfg.temperatures.rooms
-		day = cfg.temperatures.day
-		night = cfg.temperatures.night
-		away = cfg.temperatures.away
-		modes = cfg.modes.collectEntries { k, v -> [(k): v.collectEntries { k1, v1 -> [(k1): valueOf(v1?.toUpperCase() ?: "REGULAR")] }] }
+import static net.suteren.netatmo.PresenceMode.AWAY;
+import static net.suteren.netatmo.PresenceMode.REGULAR;
+import static net.suteren.netatmo.PresenceMode.WORK;
+
+public class ZonePresets {
+	Map<String, Map<String, PresenceMode>> modes;
+	private final Map<String, RoomCfg> rooms;
+	private final int day;
+	private final int night;
+	private final int away;
+
+	public ZonePresets(CliCfg cfg) {
+		rooms = cfg.temperatures().rooms();
+		day = cfg.temperatures().day();
+		night = cfg.temperatures().night();
+		away = cfg.temperatures().away();
+		modes = cfg.modes();
 	}
 
-	int getTemp(String scheduleId, int zoneId, String roomId) {
-		PresenceMode mode = modes.get(scheduleId)?.get(roomId) ?: REGULAR
+	public int getTemp(String scheduleId, int zoneId, String roomId) {
 
+		PresenceMode mode = Optional.ofNullable(modes.get(scheduleId).get(roomId)).orElse(REGULAR);
 		if (mode == AWAY || (mode == WORK && zoneId == 0)) {
-			return getAway(roomId)
+			return getAway(roomId);
 		} else {
-			switch (zoneId) {
-				case 0: // Komfortní
-					return getDay(roomId)
-				case 1: // Noc
-					return getNight(roomId)
-				case 3: // Komfortní+
-					return getDay(roomId)
-				case 4: // Úsporný
-					return getAway(roomId)
-			}
+			return switch (zoneId) {
+				case 0 -> getDay(roomId); // Komfortní
+				case 1 -> getNight(roomId); // Noc
+				case 3 -> getDay(roomId); // Komfortní+
+				case 4 -> getAway(roomId); // Úsporný
+				default -> throw new IllegalStateException("Unexpected value: " + zoneId);
+			};
 		}
 	}
 
-
 	private int getDay(String roomId) {
-		rooms.get(roomId)?.day ?: day
+		return Optional.ofNullable(rooms.get(roomId))
+			.map(RoomCfg::day)
+			.orElse(day);
 	}
 
 	private int getNight(String roomId) {
-		rooms.get(roomId)?.night ?: night
+		return Optional.ofNullable(rooms.get(roomId))
+			.map(RoomCfg::night)
+			.orElse(night);
 	}
 
 	private int getAway(String roomId) {
-		rooms.get(roomId)?.away ?: away
+		return Optional.ofNullable(rooms.get(roomId))
+			.map(RoomCfg::away)
+			.orElse(away);
 	}
 }

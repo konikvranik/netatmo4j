@@ -14,7 +14,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -120,8 +119,10 @@ public abstract class AbstractNetatmoClient<T> {
 	}
 
 	public static String constructUrl(String path, Map<String, String> params) {
-		String query = queryParams(params);
-		return NETATMO_BASE_URL + sanitizePath(path) + (StringUtils.isNotBlank(query) ? "?" + query : "");
+		return NETATMO_BASE_URL + sanitizePath(path) + Optional.ofNullable(params)
+			.map(AbstractNetatmoClient::queryParams)
+			.map("?%s"::formatted)
+			.orElse("");
 	}
 
 	public static String sanitizePath(String url) {

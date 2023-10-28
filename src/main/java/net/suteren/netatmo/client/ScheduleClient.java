@@ -24,40 +24,40 @@ public class ScheduleClient extends AbstractApiClient<InputStream> {
 		homeClient = new HomeClient(auth);
 	}
 
-	List<ObjectNode> getSchedules(String homeId) throws IOException, URISyntaxException, InterruptedException, ConnectionException {
+	public List<ObjectNode> getSchedules(String homeId) throws IOException, URISyntaxException, InterruptedException, ConnectionException {
 		return getSchedules(homeClient.getHome(homeId));
 	}
 
-	static List<ObjectNode> getSchedules(ObjectNode homeData) {
+	public static List<ObjectNode> getSchedules(ObjectNode homeData) {
 		return IterableUtils.toList(homeData.at("/schedules")).stream()
 			.map(ObjectNode.class::cast)
 			.toList();
 	}
 
-	ObjectNode getSchedule(String homeId, String scheduleId) throws IOException, URISyntaxException, InterruptedException, ConnectionException {
+	public ObjectNode getSchedule(String homeId, String scheduleId) throws IOException, URISyntaxException, InterruptedException, ConnectionException {
 		return getSchedule(getSchedules(homeId), scheduleId);
 	}
 
-	static ObjectNode getSchedule(ObjectNode homeData, String scheduleId) {
+	public static ObjectNode getSchedule(ObjectNode homeData, String scheduleId) {
 		return getSchedule(getSchedules(homeData), scheduleId);
 	}
 
-	static ObjectNode getSchedule(List<ObjectNode> schedules, String scheduleId) {
+	public static ObjectNode getSchedule(List<ObjectNode> schedules, String scheduleId) {
 		return schedules.stream()
 			.filter(s -> Objects.equals(s.at("/id").textValue(), scheduleId))
 			.findAny()
 			.orElse(null);
 	}
 
-	ObjectNode getScheduleByName(String homeId, String name) throws IOException, URISyntaxException, InterruptedException, ConnectionException {
+	public ObjectNode getScheduleByName(String homeId, String name) throws IOException, URISyntaxException, InterruptedException, ConnectionException {
 		return getScheduleByName(getSchedules(homeId), name);
 	}
 
-	static ObjectNode getScheduleByName(ObjectNode homeData, String name) {
+	public static ObjectNode getScheduleByName(ObjectNode homeData, String name) {
 		return getScheduleByName(getSchedules(homeData), name);
 	}
 
-	static ObjectNode getScheduleByName(List<ObjectNode> schedules, String name) {
+	public static ObjectNode getScheduleByName(List<ObjectNode> schedules, String name) {
 		return schedules.stream()
 			.filter(s -> Objects.equals(s.at("/name").textValue(), name))
 			.findAny()
