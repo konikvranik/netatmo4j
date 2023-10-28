@@ -13,15 +13,15 @@ import org.slf4j.simple.SimpleLogger;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 
 import lombok.extern.slf4j.Slf4j;
 import net.suteren.netatmo.ZonePresets;
 import net.suteren.netatmo.auth.AuthClient;
 import net.suteren.netatmo.client.ConnectionException;
-import net.suteren.netatmo.client.HomeClient;
-import net.suteren.netatmo.client.ScheduleClient;
+import net.suteren.netatmo.domain.therm.Schedule;
+import net.suteren.netatmo.therm.HomeClient;
+import net.suteren.netatmo.therm.ScheduleClient;
 import picocli.CommandLine;
 
 @Slf4j
@@ -127,19 +127,17 @@ public class NetatmoCli implements Callable<Integer> {
 					switch (format) {
 					case "text":
 						System.out.println(new ScheduleClient(authClient).getSchedules(homeId).stream()
-							.map(h -> "%25s : %s".formatted(h.at("/id").textValue(), h.at("/name").textValue()))
+							.map(h -> "%25s : %s".formatted(h.getId(), h.name()))
 							.collect(Collectors.joining("\n")));
 						break;
 					case "json":
 						System.out.println(
 							OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(new ScheduleClient(authClient).getSchedules(homeId).stream()
-								.peek(r -> r.remove("'module_ids'"))
 								.toList()));
 						break;
 					case "yaml":
 						System.out.println(
 							YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(new ScheduleClient(authClient).getSchedules(homeId).stream()
-								.peek(r -> r.remove("'module_ids'"))
 								.toList()));
 						break;
 					}
@@ -152,19 +150,17 @@ public class NetatmoCli implements Callable<Integer> {
 					switch (format) {
 					case "text":
 						System.out.println(new ScheduleClient(authClient).getSchedules(homeId).stream()
-							.map(h -> "%25s : %s".formatted(h.at("/id").textValue(), h.at("/name").textValue()))
+							.map(h -> "%25s : %s".formatted(h.getId(), h.name()))
 							.collect(Collectors.joining("\n")));
 						break;
 					case "json":
 						System.out.println(
 							OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(new ScheduleClient(authClient).getSchedules(homeId).stream()
-								.peek(r -> r.remove("'module_ids'"))
 								.toList()));
 						break;
 					case "yaml":
 						System.out.println(
 							YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(new ScheduleClient(authClient).getSchedules(homeId).stream()
-								.peek(r -> r.remove("'module_ids'"))
 								.toList()));
 						break;
 					}
@@ -175,25 +171,25 @@ public class NetatmoCli implements Callable<Integer> {
 			case "update":
 				ZonePresets zonePresets = new ZonePresets(cfg);
 				ScheduleClient scheduleClient = new ScheduleClient(authClient);
-				List<ObjectNode> schedules = scheduleClient.getSchedules(homeId);
+				List<Schedule> schedules = scheduleClient.getSchedules(homeId);
 				schedules.forEach(schedule -> {
-					String scheduleId = schedule.at("/id").textValue();
-					schedule.at("zones").elements().forEachRemaining(zone ->
-					{
-						int zoneId = zone.at("/id").intValue();
-						zone.at("rooms").elements().forEachRemaining(room ->
-							((ObjectNode) room).put("therm_setpoint_temperature", zonePresets.getTemp(scheduleId, zoneId, room.at("id").textValue()))
-						);
-					});
+					String scheduleId = schedule.getId();
+					schedule = schedule.toBuilder()
+						.zones(schedule.zones().stream()
+							.map(z -> z.toBuilder().rooms(z.rooms().stream()
+								.map(r -> r.toBuilder().thermSetpointTemperature(zonePresets.getTemp(scheduleId, z.id(), r.id())).build())
+								.toList()).build())
+							.toList()).build();
 					try {
 						scheduleClient.setSchedule(schedule, homeId);
 					} catch (IOException | InterruptedException | URISyntaxException e) {
+						log.error(e.getMessage(), e);
 						throw new RuntimeException(e);
 					} catch (ConnectionException e) {
 						try {
 							log.error(IOUtils.toString(e.getConnection().getErrorStream()));
 						} catch (IOException ex) {
-							throw new RuntimeException(ex);
+							log.error(e.getMessage(), e);
 						}
 						throw new RuntimeException(e);
 					}

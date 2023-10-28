@@ -27,7 +27,7 @@ public class ZonePresets {
 
 	public int getTemp(String scheduleId, int zoneId, String roomId) {
 
-		PresenceMode mode = Optional.ofNullable(modes.get(scheduleId).get(roomId)).orElse(REGULAR);
+		PresenceMode mode = Optional.ofNullable(modes).map(m -> m.get(scheduleId)).map(s -> s.get(roomId)).orElse(REGULAR);
 		if (mode == AWAY || (mode == WORK && zoneId == 0)) {
 			return getAway(roomId);
 		} else {

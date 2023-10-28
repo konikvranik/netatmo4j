@@ -1,4 +1,4 @@
-package net.suteren.netatmo.client;
+package net.suteren.netatmo.therm;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +14,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import net.suteren.netatmo.auth.AuthClient;
+import net.suteren.netatmo.client.AbstractApiClient;
+import net.suteren.netatmo.client.ConnectionException;
 
 public class HomeClient extends AbstractApiClient<InputStream> {
 	public HomeClient(AuthClient auth) {
