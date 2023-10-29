@@ -1,4 +1,6 @@
+#!/usr/bin/env groovy
 @GrabResolver(name = 'netatmo4j', root = 'https://s01.oss.sonatype.org/content/repositories/snapshots/')
+@GrabConfig(systemClassLoader = true)
 @Grapes([
 		@Grab('info.picocli:picocli:4.7.3'),
 		@Grab('info.picocli:picocli-groovy:4.7.3'),
