@@ -2,7 +2,7 @@
 org-slf4j = "2.0.7"
 
 [libraries]
-com-fasterxml-jackson-core-jackson-databind = "com.fasterxml.jackson.core:jackson-databind:2.15.1"
+com-fasterxml-jackson-core-jackson-databind = "com.fasterxml.jackson.core:jackson-databind:2.15.3"
 com-fasterxml-jackson-dataformat-jackson-dataformat-yaml = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.1"
 info-picocli = "info.picocli:picocli:4.7.3"
 info-picocli-picocli-codegen = "info.picocli:picocli-codegen:4.7.5"
