@@ -1,6 +1,6 @@
 # netatmo4j ![example workflow](https://github.com/konikvranik/netatmo4j/actions/workflows/gradle.yml/badge.svg)
 
-This is a library for calling the Netatmo API and receiving Java native classes.
+Library for calling the Netatmo API and providing data in Java classes.
 
 Data models are in the package `net.suteren.netatmo.domain`.
 

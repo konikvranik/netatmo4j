@@ -28,7 +28,7 @@ import static java.nio.file.attribute.PosixFilePermission.OWNER_WRITE;
 public final class AuthClient extends AbstractNetatmoClient {
 
 	private final String clientId;
-	private final Object scope;
+	private final Collection<Scope> scope;
 	private final String state;
 	@Setter @Getter private String accessToken;
 	@Setter @Getter private String refreshToken;
@@ -45,11 +45,12 @@ public final class AuthClient extends AbstractNetatmoClient {
 	 * @param clientId `client_id` used to retrieve the authentication token.
 	 * @param clientSecret `client_secret` used to retrieve the authentication token.
 	 * @param scope scopes to authorize to.
+	 * If no scope is provided during the token request, the default is {@link Scope#read_station}
 	 * @param state to prevent Cross-site Request Forgery.
 	 * @param authFile local file to store tokens to. This file should be protected from unauthorized reading.
 	 * @throws IOException in case of connection problems of problems accessing the `authFile`.
 	 */
-	public AuthClient(String clientId, String clientSecret, Object scope, String state, File authFile) throws IOException {
+	public AuthClient(String clientId, String clientSecret, Collection<Scope> scope, String state, File authFile) throws IOException {
 		this.authFile = authFile;
 		if (this.authFile.exists()) {
 			fixFilePermissions(this.authFile);
@@ -138,16 +139,67 @@ public final class AuthClient extends AbstractNetatmoClient {
 		fixFilePermissions(authFile);
 	}
 
-	private static String renderScope(Object scope) {
-		return scope instanceof Collection<?> scopes
-			? scopes.stream()
+	private static String renderScope(Collection<Scope> scope) {
+		return scope.stream()
 			.map(Object::toString)
-			.collect(Collectors.joining(" "))
-			: (String) scope;
+			.collect(Collectors.joining(" "));
 	}
 
 	private static void fixFilePermissions(File authFile) throws IOException {
 		Files.setPosixFilePermissions(authFile.toPath(), Set.of(OWNER_READ, OWNER_WRITE));
 	}
 
+	public enum Scope {
+		/**
+		 * to retrieve weather station data (Getstationsdata, Getmeasure)
+		 */
+		read_station,
+
+		/**
+		 * to retrieve thermostat data ( Homestatus, Getroommeasure...)
+		 */
+		read_thermostat,
+
+		/**
+		 * to set up the thermostat (Synchomeschedule, Setroomthermpoint...)
+		 */
+		write_thermostat,
+
+		/**
+		 * to retrieve Smart Indoor Cameradata (Gethomedata, Getcamerapicture...)
+		 */
+		read_camera,
+
+		/**
+		 * to inform the Smart Indoor Camera that a specific person or everybody has left the Home (Setpersonsaway, Setpersonshome)
+		 */
+		write_camera,
+
+		/**
+		 * to access the camera, the videos and the live stream.
+		 * Netatmo cares a lot about users privacy and security. The "access" scope grants you access to sensitive data and is delivered by Netatmo teams on a per-app basis. To submit an access scope request, see <a href="https://dev.netatmo.com/request-scope-form">here</a>.
+		 */
+		access_camera,
+
+		/**
+		 * to retrieve Smart Outdoor Camera data (Gethomedata, Getcamerapicture...)
+		 */
+		read_presence,
+
+		/**
+		 * to access the camera, the videos and the live stream.
+		 * Netatmo cares a lot about users privacy and security. The "access" scope grants you access to sensitive data and is delivered by Netatmo teams on a per-app basis. To submit an access scope request, see <a href="https://dev.netatmo.com/request-scope-form">here</a>.
+		 */
+		access_presence,
+
+		/**
+		 * to retrieve the Smart Smoke Alarm informations and events (Gethomedata, Geteventsuntil...)
+		 */
+		read_smokedetector,
+
+		/**
+		 * to read data coming from Smart Indoor Air Quality Monitor (gethomecoachsdata)
+		 */
+		read_homecoach,
+	}
 }

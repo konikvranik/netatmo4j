@@ -28,6 +28,9 @@ import net.suteren.netatmo.therm.HomeClient;
 import net.suteren.netatmo.therm.ScheduleClient;
 import picocli.CommandLine;
 
+import static net.suteren.netatmo.auth.AuthClient.Scope.read_thermostat;
+import static net.suteren.netatmo.auth.AuthClient.Scope.write_thermostat;
+
 @Slf4j
 @CommandLine.Command(name = "checksum", mixinStandardHelpOptions = true, version = "checksum 4.0",
 	description = "Prints the checksum (SHA-256 by default) of a file to STDOUT.")
@@ -73,7 +76,7 @@ public final class NetatmoCli implements Callable<Integer> {
 		}
 
 		try {
-			AuthClient authClient = new AuthClient(clientId, clientSecret, List.of("read_thermostat", "write_thermostat"), "Netatmo tool", authconfig);
+			AuthClient authClient = new AuthClient(clientId, clientSecret, List.of(read_thermostat, write_thermostat), "Netatmo tool", authconfig);
 			CliCfg cfg = YAML_OBJECT_MAPPER.readValue(config, CliCfg.class);
 			if (homeId == null) {
 				homeId = cfg.homeId();
