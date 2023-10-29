@@ -1,4 +1,4 @@
-# netatmo4j
+# netatmo4j ![example workflow](https://github.com/konikvranik/netatmo4j/actions/workflows/gradle.yml/badge.svg)
 
 This is a library for calling the Netatmo API and receiving Java native classes.
 
@@ -56,4 +56,4 @@ If you want to visualize timeline of the schedule, you can use groovy script `sr
 Pass Schedule JSON as a parameter.
 Then it will render either SVG or PlantUml source, depending on presence of the `-i` flag.
 
-Example of the result: ![](example_timeline.svg)
+Example of the result: ![timeline example](example_timeline.svg)
