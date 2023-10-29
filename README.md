@@ -1,4 +1,4 @@
-# netatmo4j ![example workflow](https://github.com/konikvranik/netatmo4j/actions/workflows/gradle.yml/badge.svg)
+# netatmo4j ![gradle](https://github.com/konikvranik/netatmo4j/actions/workflows/gradle.yml/badge.svg)![codeql-analysis](https://github.com/konikvranik/netatmo4j/actions/workflows/codeql-analysis.yml/badge.svg)![release](https://github.com/konikvranik/netatmo4j/actions/workflows/gradle-publish.yml/badge.svg)
 
 Library for calling the Netatmo API and providing data in Java classes.
 
