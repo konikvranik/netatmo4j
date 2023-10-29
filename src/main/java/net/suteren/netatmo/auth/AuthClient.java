@@ -37,6 +37,18 @@ public final class AuthClient extends AbstractNetatmoClient {
 	private final OAuth2 oauth;
 	private final File authFile;
 
+	/**
+	 * Retrieves OAUTH2 token.
+	 * It is required by {@link net.suteren.netatmo.client.AbstractApiClient} to provide valid `Authentication` token.
+	 * See <a href="https://dev.netatmo.com/apidocumentation/oauth">Netatmo Authentication</a> for more details.
+	 *
+	 * @param clientId `client_id` used to retrieve the authentication token.
+	 * @param clientSecret `client_secret` used to retrieve the authentication token.
+	 * @param scope scopes to authorize to.
+	 * @param state to prevent Cross-site Request Forgery.
+	 * @param authFile local file to store tokens to. This file should be protected from unauthorized reading.
+	 * @throws IOException in case of connection problems of problems accessing the `authFile`.
+	 */
 	public AuthClient(String clientId, String clientSecret, Object scope, String state, File authFile) throws IOException {
 		this.authFile = authFile;
 		if (this.authFile.exists()) {
@@ -61,6 +73,12 @@ public final class AuthClient extends AbstractNetatmoClient {
 
 	}
 
+	/**
+	 * Entrance URL to log in and approve the client.
+	 *
+	 * @param redirectUri url of this application to pass the auth code to.
+	 * @return URL to open in the browser.
+	 */
 	public String authorizeUrl(String redirectUri) {
 		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>(4);
 		map.put("client_id", clientId);
@@ -70,6 +88,15 @@ public final class AuthClient extends AbstractNetatmoClient {
 		return constructUrl("oauth2/authorize", map);
 	}
 
+	/**
+	 * Retrieves the authorization token from cache, and try to refresh it in case it is going to expire.
+	 * If there is no authorization token in the cache, start OAuth2 process to log in and retrieve the token.
+	 *
+	 * @return authorization token
+	 * @throws URISyntaxException if {@link #authorizeUrl(String)} return wrong URL.
+	 * @throws IOException in the case of local callback server issues.
+	 * @throws ConnectionException in case of error from Netatmo API server during retrieving the token.
+	 */
 	public String getToken() throws URISyntaxException, IOException, InterruptedException, ConnectionException {
 		if (accessToken == null) {
 			oauth.authorize(this::authorizeUrl);

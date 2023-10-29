@@ -10,9 +10,10 @@ Currently only thermostat and valves are supported.
 For authentication there is `net.suteren.netatmo.auth.AuthClient`.
 It is required by API classes.
 If you try to connect to the API, it opens Netatmo web page in the web browser,
-let you log in
-and approve the application, and then it stores auth token and refresh token into the `~/.netatmoauth.json` file,
+let you log in and approve the application, and then it stores auth token and refresh token into the `~/.netatmoauth.json` file,
 so you don't have to log in every request.
+
+See [Netatmo Authentication](https://dev.netatmo.com/apidocumentation/oauth) for details.
 
 There is also a simple commandline client and timeline visualizer. See the sections below.
 
@@ -20,8 +21,7 @@ There is also a simple commandline client and timeline visualizer. See the secti
 
 ```java
 
-AuthClient authClient =
-	new AuthClient(clientId, clientSecret, List.of("read_thermostat", "write_thermostat"), "Netatmo tool", authconfig);
+AuthClient authClient =	new AuthClient(clientId, clientSecret, List.of("read_thermostat", "write_thermostat"), "Netatmo tool", authconfig);
 
 HomeClient homeClient = new HomeClient(authClient).getHomesData();
 HomesData homesData = homeClient.getHomesData();

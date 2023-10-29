@@ -23,19 +23,22 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * This class is responsible for Oauth2 callback server handling and opening of the URL in the browser.
+ * It is intended just for internal use.
+ */
 @Slf4j final class OAuth2 {
 	private final CountDownLatch latch = new CountDownLatch(1);
 	@Setter @Getter private String code;
 	@Setter @Getter private String redirectUri;
 
-	public String authorize(Function<String, String> getUrl) throws URISyntaxException, IOException, InterruptedException {
+	void authorize(Function<String, String> getUrl) throws URISyntaxException, IOException, InterruptedException {
 		final HttpServer server = startServer();
 		redirectUri = "http://localhost:%d/".formatted(server.getAddress().getPort());
 		String authUrl = getUrl.apply(redirectUri);
 		log.info("Authorize the app in the browser...\nIf it did not happen automatically, open following URL in your browser: {}", authUrl);
 		Desktop.getDesktop().browse(new URI(authUrl));
 		latch.await();
-		return code;
 	}
 
 	private HttpServer startServer() throws IOException {
