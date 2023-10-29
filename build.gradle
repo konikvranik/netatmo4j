@@ -93,29 +93,28 @@ publishing {
 		mavenJava(MavenPublication) {
 			from(components.java)
 			pom {
-				name 'netatmo4j'
-				packaging 'jar'
+				name = 'netatmo4j'
 				// optionally artifactId can be defined here
-				description 'Library to call Netatmo API.'
-				url 'https://github.com/konikvranik/netatmo4j'
+				description = 'Library to call Netatmo API.'
+				url = 'https://github.com/konikvranik/netatmo4j'
 
 				scm {
-					connection 'scm:git:git@github.com:konikvranik/netatmo4j.git'
-					url 'https://github.com/konikvranik/netatmo4j.git'
+					connection = 'scm:git:git@github.com:konikvranik/netatmo4j.git'
+					url = 'https://github.com/konikvranik/netatmo4j.git'
 				}
 
 				licenses {
 					license {
-						name 'The Apache License, Version 2.0'
-						url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+						name = 'The Apache License, Version 2.0'
+						url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
 					}
 				}
 
 				developers {
 					developer {
-						id 'konikvranik'
-						name 'Petr Vraník'
-						email 'petr@vranik.name'
+						id = 'konikvranik'
+						name = 'Petr Vraník'
+						email = 'petr@vranik.name'
 					}
 				}
 			}
