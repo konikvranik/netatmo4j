@@ -123,6 +123,7 @@ publishing {
 }
 
 signing {
+	println "Signing: ${System.getenv('GPG_SIGNING_KEY')}\n${findProperty("signing.password")}"
 	useInMemoryPgpKeys(System.getenv('GPG_SIGNING_KEY'), findProperty("signing.password"))
 	sign publishing.publications.mavenJava
 }
