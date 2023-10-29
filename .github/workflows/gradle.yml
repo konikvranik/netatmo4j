@@ -32,6 +32,11 @@ jobs:
       - name: Publish with Gradle
         env:
           GPG_SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          GPG_SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          GPR_USERNAME: ${{ github.repository_owner }}
+          GPR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
         with:
-          arguments: build publish -Pgpr.key="${{ secrets.GITHUB_TOKEN }}" -Pgpr.user="${{ github.repository_owner }}" -Possrh.username="${{ secrets.OSSRH_USERNAME }}" -Possrh.password="${{ secrets.OSSRH_PASSWORD }}" -Psigning.password="${{ secrets.SIGNING_PASSWORD }}" -Psigning.key="${{ secrets.SIGNING_KEY }}" -i -s
+          arguments: build publish -i -s

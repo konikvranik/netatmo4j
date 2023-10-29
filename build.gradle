@@ -72,8 +72,8 @@ publishing {
 			name = "GitHubPackages"
 			url = uri("https://maven.pkg.github.com/konikvranik/netatmo4j")
 			credentials {
-				username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-				password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+				username = project.findProperty("gpr.user") ?: System.getenv("GPR_USERNAME")
+				password = project.findProperty("gpr.key") ?: System.getenv("GPR_TOKEN")
 			}
 		}
 		maven {
@@ -83,8 +83,8 @@ publishing {
 					: "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
 
 			credentials {
-				username = project.findProperty("ossrh.username")
-				password = project.findProperty("ossrh.password")
+				username = project.findProperty("ossrh.username") ?: System.getenv("OSSRH_USERNAME")
+				password = project.findProperty("ossrh.password") ?: System.getenv("OSSRH_PASSWORD")
 			}
 		}
 	}
@@ -123,8 +123,6 @@ publishing {
 }
 
 signing {
-	println "!!! DEBUG: (${findProperty('signing.key')}, ${findProperty('signing.password')})"
-	useInMemoryPgpKeys(System.getenv('GPG_SIGNING_KEY'), findProperty('signing.password'))
-	//useInMemoryPgpKeys(findProperty('signing.key'), findProperty('signing.password'))
+	useInMemoryPgpKeys(findProperty('signing.key') ?: System.getenv('GPG_SIGNING_KEY'), findProperty('signing.password') ?: System.getenv('GPG_SIGNING_PASSWORD'))
 	sign publishing.publications.mavenJava
 }
