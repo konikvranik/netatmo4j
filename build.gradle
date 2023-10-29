@@ -123,6 +123,7 @@ publishing {
 }
 
 signing {
+	println "useInMemoryPgpKeys(${findProperty('signing.key')}, ${findProperty('signing.password')})"
 	useInMemoryPgpKeys(findProperty('signing.key'), findProperty('signing.password'))
 	sign publishing.publications.mavenJava
 }
