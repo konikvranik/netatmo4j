@@ -23,6 +23,10 @@ import org.slf4j.LoggerFactory
 import org.slf4j.simple.SimpleLogger
 import picocli.CommandLine
 
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.Temporal
 import java.util.concurrent.atomic.AtomicInteger
 
 @Field final static JSON_MAPPER = JsonMapper.builder().build()
@@ -44,6 +48,8 @@ if (debug) {
 	System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE")
 }
 
+@Field static final DateTimeFormatter WEEKDAY_FORMATTER = DateTimeFormatter.ofPattern('ccc')
+@Field static final Temporal WEEKDAY_TEMPORAL = LocalDate.now()
 
 Schedule schedule = JSON_MAPPER.readValue(scheduleFile, Schedule)
 zoneNames = schedule.zones().collectEntries { [(it.id()): it.name()] }
@@ -55,18 +61,22 @@ String source = """
 
 title Weekly schedule: ${schedule.name()}
 
-concise "Mo" as d0
-concise "Tu" as d1
-concise "We" as d2
-concise "Th" as d3
-concise "Fr" as d4
-concise "Sa" as d5
-concise "Fr" as d6
+concise "${formatDow(DayOfWeek.MONDAY)}" as d0
+concise "${formatDow(DayOfWeek.TUESDAY)}" as d1
+concise "${formatDow(DayOfWeek.WEDNESDAY)}" as d2
+concise "${formatDow(DayOfWeek.THURSDAY)}" as d3
+concise "${formatDow(DayOfWeek.FRIDAY)}" as d4
+concise "${formatDow(DayOfWeek.SATURDAY)}" as d5
+concise "${formatDow(DayOfWeek.SUNDAY)}" as d6
 
 ${renderDays(days)}
 
 @enduml
 """
+
+private static String formatDow(DayOfWeek dow) {
+	WEEKDAY_FORMATTER.format(WEEKDAY_TEMPORAL.with(dow))
+}
 
 if (!renderImage) {
 	println source
