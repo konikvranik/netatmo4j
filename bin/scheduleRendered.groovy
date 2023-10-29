@@ -1,9 +1,7 @@
 #!/usr/bin/env groovy
 @GrabConfig(systemClassLoader = true)
 @Grapes([
-		@Grab('info.picocli:picocli:4.7.3'),
 		@Grab('info.picocli:picocli-groovy:4.7.3'),
-		@Grab('org.slf4j:slf4j-api:2.0.7'),
 		@Grab('org.slf4j:slf4j-simple:2.0.7'),
 		@Grab('net.sourceforge.plantuml:plantuml:1.2023.10'),
 		@Grab('net.suteren.netatmo:netatmo4j:0.3')
