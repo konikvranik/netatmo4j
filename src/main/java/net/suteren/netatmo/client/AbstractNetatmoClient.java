@@ -8,6 +8,8 @@ import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -23,61 +25,30 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Setter @Getter @Slf4j
-public abstract class AbstractNetatmoClient<T> {
+public abstract class AbstractNetatmoClient {
 
 	public static final String URLENCODED_CHARSET_UTF_8 = "application/x-www-form-urlencoded;charset=UTF-8";
 	protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	public static final String NETATMO_BASE_URL = "https://api.netatmo.com";
+	public static final String HTTP_METHOD_GET = "GET";
+	public static final String HTTP_METHOD_POST = "POST";
 	private HttpURLConnection connection;
 
-	public T post(String path, Map<String, String> params, Object content,
-		String contentType, Map<String, String> headers) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
-		return callNetatmo("POST", path, content, contentType, params, headers);
-	}
-
-	public T post(String path, Map<String, String> params, Object content,
+	public InputStream post(String path, Map<String, String> params, Object content,
 		String contentType) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
-		return post(path, params, content, contentType, null);
+		return callNetatmo(HTTP_METHOD_POST, path, content, contentType, params, null);
 	}
 
-	public T post(String path, Map<String, String> params, Object content)
-		throws IOException, ConnectionException, URISyntaxException, InterruptedException {
-		return post(path, params, content, null, null);
+	public InputStream get(String path, Map<String, String> params) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
+		return callNetatmo(HTTP_METHOD_GET, path, null, null, params, null);
 	}
 
-	public T post(String path, Map<String, String> params) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
-		return post(path, params, null, null, null);
+	public InputStream get(String path) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
+		return callNetatmo(HTTP_METHOD_GET, path, null, null, null, null);
 	}
 
-	public T post(String path) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
-		return post(path, null, null, null, null);
-	}
-
-	public T get(String path, Map<String, String> params, Object content,
-		String contentType, Map<String, String> headers) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
-		return callNetatmo("GET", path, content, contentType, params, headers);
-	}
-
-	public T get(String path, Map<String, String> params, Object content,
-		String contentType) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
-		return get(path, params, content, contentType, null);
-	}
-
-	public T get(String path, Map<String, String> params, Object content)
-		throws IOException, ConnectionException, URISyntaxException, InterruptedException {
-		return get(path, params, content, null, null);
-	}
-
-	public T get(String path, Map<String, String> params) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
-		return get(path, params, null, null, null);
-	}
-
-	public T get(String path) throws IOException, ConnectionException, URISyntaxException, InterruptedException {
-		return get(path, null, null, null, null);
-	}
-
-	protected T callNetatmo(String method, String path, Object content, String contentType,
+	protected InputStream callNetatmo(String method, String path, Object content, String contentType,
 		Map<String, String> params, Map<String, String> headers)
 		throws IOException, ConnectionException, URISyntaxException, InterruptedException {
 		connection = ((HttpURLConnection) (new URL(constructUrl(path, params)).openConnection()));
@@ -107,9 +78,9 @@ public abstract class AbstractNetatmoClient<T> {
 		}
 
 		if (connection.getResponseCode() == 200) {
-			return (T) connection.getContent();
+			return (InputStream) connection.getContent();
 		} else {
-			throw new ConnectionException(connection);
+			throw new ConnectionException(connection, OBJECT_MAPPER.readValue(connection.getErrorStream(), NetatmoError.class).error());
 		}
 	}
 
@@ -130,12 +101,12 @@ public abstract class AbstractNetatmoClient<T> {
 		return url.startsWith("/") ? url : ("/" + url);
 	}
 
-	public static String urlEncode(String value, String charset) throws UnsupportedEncodingException {
+	public static String urlEncode(String value, Charset charset) throws UnsupportedEncodingException {
 		return URLEncoder.encode(value, charset);
 	}
 
 	@SneakyThrows
 	public static String urlEncode(String value) {
-		return urlEncode(value, "UTF-8");
+		return urlEncode(value, StandardCharsets.UTF_8);
 	}
 }

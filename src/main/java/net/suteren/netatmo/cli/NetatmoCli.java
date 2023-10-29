@@ -4,10 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.simple.SimpleLogger;
 
 import com.fasterxml.jackson.databind.MapperFeature;
@@ -20,7 +21,9 @@ import net.suteren.netatmo.ZonePresets;
 import net.suteren.netatmo.auth.AuthClient;
 import net.suteren.netatmo.client.ConnectionException;
 import net.suteren.netatmo.client.NetatmoResponse;
-import net.suteren.netatmo.domain.therm.Schedule;
+import net.suteren.netatmo.domain.therm.Home;
+import net.suteren.netatmo.domain.therm.HomesData;
+import net.suteren.netatmo.domain.therm.Room;
 import net.suteren.netatmo.therm.HomeClient;
 import net.suteren.netatmo.therm.ScheduleClient;
 import picocli.CommandLine;
@@ -76,55 +79,66 @@ public class NetatmoCli implements Callable<Integer> {
 				homeId = cfg.homeId();
 			}
 
-			HomeClient homeClient = new HomeClient(authClient);
+			HomesData homesData = new HomeClient(authClient).getHomesData();
+			Optional<Home> currentHome = homesData.getHomeById(homeId);
 			switch (command) {
 			case "list":
 				switch (arguments[0]) {
 				case "homes":
+					List<Home> homes = homesData.homes();
 					switch (format) {
 					case "text":
-						System.out.println(homeClient.getHomes().stream()
+						System.out.println(homes.stream()
 							.map(h -> "%25s : %s".formatted(h.id(), h.name()))
 							.collect(Collectors.joining("\n")));
 						break;
 					case "json":
-						System.out.println(OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homeClient.getHomes()));
+						System.out.println(OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homes));
 						break;
 					case "yaml":
-						System.out.println(YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homeClient.getHomes()));
+						System.out.println(YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homes));
 						break;
 					}
 					break;
 				case "rooms":
+					List<Room> rooms = currentHome
+						.orElseThrow(() -> new NoSuchElementException("Home %s is not present.".formatted(homeId)))
+						.rooms();
 					switch (format) {
 					case "text":
-						System.out.println(homeClient.getRooms(homeId).stream()
+						System.out.println(rooms.stream()
 							.map(h -> "%15s : %s".formatted(h.id(), h.name()))
 							.collect(Collectors.joining("\n")));
 						break;
 					case "json":
-						System.out.println(OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homeClient.getRooms(homeId)));
+						System.out.println(OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(rooms));
 						break;
 					case "yaml":
-						System.out.println(YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homeClient.getRooms(homeId)));
+						System.out.println(YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(rooms));
 						break;
 					}
 					break;
 				case "schedules":
 					switch (format) {
 					case "text":
-						System.out.println(new ScheduleClient(authClient).getSchedules(homeId).stream()
+						System.out.println(currentHome
+							.orElseThrow(() -> new NoSuchElementException("Home %s is not present.".formatted(homeId)))
+							.schedules().stream()
 							.map(h -> "%25s : %s".formatted(h.getId(), h.name()))
 							.collect(Collectors.joining("\n")));
 						break;
 					case "json":
 						System.out.println(
-							OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(new ScheduleClient(authClient).getSchedules(homeId).stream()
+							OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(currentHome
+								.orElseThrow(() -> new NoSuchElementException("Home %s is not present.".formatted(homeId)))
+								.schedules().stream()
 								.toList()));
 						break;
 					case "yaml":
 						System.out.println(
-							YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(new ScheduleClient(authClient).getSchedules(homeId).stream()
+							YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(currentHome
+								.orElseThrow(() -> new NoSuchElementException("Home %s is not present.".formatted(homeId)))
+								.schedules().stream()
 								.toList()));
 						break;
 					}
@@ -136,18 +150,24 @@ public class NetatmoCli implements Callable<Integer> {
 				case "schedules":
 					switch (format) {
 					case "text":
-						System.out.println(new ScheduleClient(authClient).getSchedules(homeId).stream()
+						System.out.println(currentHome
+							.orElseThrow(() -> new NoSuchElementException("Home %s is not present.".formatted(homeId)))
+							.schedules().stream()
 							.map(h -> "%25s : %s".formatted(h.getId(), h.name()))
 							.collect(Collectors.joining("\n")));
 						break;
 					case "json":
 						System.out.println(
-							OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(new ScheduleClient(authClient).getSchedules(homeId).stream()
+							OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(currentHome
+								.orElseThrow(() -> new NoSuchElementException("Home %s is not present.".formatted(homeId)))
+								.schedules().stream()
 								.toList()));
 						break;
 					case "yaml":
 						System.out.println(
-							YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(new ScheduleClient(authClient).getSchedules(homeId).stream()
+							YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(currentHome
+								.orElseThrow(() -> new NoSuchElementException("Home %s is not present.".formatted(homeId)))
+								.schedules().stream()
 								.toList()));
 						break;
 					}
@@ -155,17 +175,16 @@ public class NetatmoCli implements Callable<Integer> {
 				case "homesdata":
 					switch (format) {
 					case "text":
-						System.out.println(homeClient.getHomesData()
-							.homes().stream()
+						System.out.println(homesData.homes().stream()
 							.map(h -> "%25s : %s".formatted(h.id(), h.name()))
 							.collect(Collectors.joining("\n")));
 						break;
 					case "json":
 						System.out.println(
-							OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homeClient.getHomesData()));
+							OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homesData));
 						break;
 					case "yaml":
-						System.out.println(YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homeClient.getHomesData()));
+						System.out.println(YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homesData));
 						break;
 					}
 					break;
@@ -175,35 +194,31 @@ public class NetatmoCli implements Callable<Integer> {
 			case "update":
 				ZonePresets zonePresets = new ZonePresets(cfg);
 				ScheduleClient scheduleClient = new ScheduleClient(authClient);
-				List<Schedule> schedules = scheduleClient.getSchedules(homeId);
-				schedules.forEach(schedule -> {
-					String scheduleId = schedule.getId();
-					schedule = schedule.toBuilder()
-						.zones(schedule.zones().stream()
-							.map(z -> z.toBuilder().rooms(z.rooms().stream()
-								.map(r -> r.toBuilder().thermSetpointTemperature(zonePresets.getTemp(scheduleId, z.id(), r.id())).build())
-								.toList()).build())
-							.toList()).build();
-					try {
-						NetatmoResponse response = scheduleClient.updateSchedule(schedule, homeId);
-						log.info("{}: {} in {} seconds", response.getServerTime().toString(), response.status(), response.timeExec());
-					} catch (IOException | InterruptedException | URISyntaxException e) {
-						log.error(e.getMessage(), e);
-						throw new RuntimeException(e);
-					} catch (ConnectionException e) {
+				currentHome.ifPresentOrElse(h -> h.schedules().forEach(schedule -> {
+						String scheduleId = schedule.getId();
+						schedule = schedule.toBuilder()
+							.zones(schedule.zones().stream()
+								.map(z -> z.toBuilder().rooms(z.rooms().stream()
+									.map(r -> r.toBuilder().thermSetpointTemperature(zonePresets.getTemp(scheduleId, z.id(), r.id())).build())
+									.toList()).build())
+								.toList()).build();
 						try {
-							log.error(IOUtils.toString(e.getConnection().getErrorStream()));
-						} catch (IOException ex) {
+							NetatmoResponse response = scheduleClient.updateSchedule(schedule, homeId);
+							log.info("{}: {} in {} seconds", response.getServerTime().toString(), response.status(), response.timeExec());
+						} catch (IOException | InterruptedException | URISyntaxException e) {
 							log.error(e.getMessage(), e);
+							throw new RuntimeException(e);
+						} catch (ConnectionException e) {
+							log.error("%d: %s".formatted(e.getErrorInfo().code(), e.getErrorInfo().message()));
+							throw new RuntimeException(e);
 						}
-						throw new RuntimeException(e);
-					}
-				});
+					}),
+					() -> {throw new NoSuchElementException("Home %s is not present.".formatted(homeId));}
+				);
 				break;
 			}
 		} catch (ConnectionException e) {
-			System.out.println("status: $e.connection.responseCode");
-			System.out.println("response: $e.connection.errorStream.text");
+			log.error("%d: %s".formatted(e.getErrorInfo().code(), e.getErrorInfo().message()));
 			throw e;
 		}
 		return 0;

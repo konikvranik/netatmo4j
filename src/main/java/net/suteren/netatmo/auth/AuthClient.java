@@ -3,7 +3,6 @@ package net.suteren.netatmo.auth;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -26,7 +25,7 @@ import net.suteren.netatmo.client.ConnectionException;
 import static java.nio.file.attribute.PosixFilePermission.OWNER_READ;
 import static java.nio.file.attribute.PosixFilePermission.OWNER_WRITE;
 
-public class AuthClient extends AbstractNetatmoClient<InputStream> {
+public class AuthClient extends AbstractNetatmoClient {
 
 	private final String clientId;
 	private final Object scope;

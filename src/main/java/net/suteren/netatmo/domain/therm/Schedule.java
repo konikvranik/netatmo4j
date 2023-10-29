@@ -1,8 +1,10 @@
 package net.suteren.netatmo.domain.therm;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -24,7 +26,13 @@ public record Schedule(
 	String type
 ) {
 
-	public String getId() {
+	@JsonIgnore public String getId() {
 		return Optional.ofNullable(id).orElse(scheduleId);
+	}
+
+	@JsonIgnore public Optional<Zone> getZoneById(int zoneId) {
+		return zones.stream()
+			.filter(z -> Objects.equals(z.id(), zoneId))
+			.findAny();
 	}
 }
