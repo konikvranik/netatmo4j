@@ -36,4 +36,4 @@ jobs:
     - name: Build with Gradle
       uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
       with:
-        arguments: publish -Pgpr.key=${{ secrets.GITHUB_TOKEN }} -Pgpr.user=${{ github.repository_owner }}
+        arguments: publish -Pgpr.key=${{ secrets.GITHUB_TOKEN }} -Pgpr.user=${{ github.repository_owner }} -Possrh.username=${{ secrets.OSSRH_USERNAME }} -Possrh.password=${{ secrets.OSSRH_PASSWORD }} -Psigning.key=${{ secrets.SIGNIN_GKEY }} -Psigning.password=${{ secrets.SIGNING_PASSWORD }}

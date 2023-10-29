@@ -1,9 +1,11 @@
 plugins {
 	id 'java-library'
 	id 'groovy'
-	id "maven-publish"
+	id 'maven-publish'
+	id 'signing'
 	id 'io.freefair.lombok' version '8.4'
 }
+
 
 repositories {
 	mavenCentral()
@@ -36,6 +38,16 @@ compileJava {
 	options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
 }
 
+tasks.register('javadocJar', Jar) {
+	archiveClassifier = 'javadoc'
+	from javadoc
+}
+
+tasks.register('sourcesJar', Jar) {
+	archiveClassifier = 'sources'
+	from sourceSets.main.allSource
+}
+
 tasks.register('fatJar', Jar) {
 	manifest {
 		attributes 'Main-Class': 'net.suteren.netatmo.cli.NetatmoCli'
@@ -49,6 +61,16 @@ tasks.register('fatJar', Jar) {
 	}
 }
 
+
+artifacts {
+	archives javadocJar, sourcesJar, fatJar
+}
+
+signing {
+	useInMemoryPgpKeys(findProperty("signing.key"), findProperty("signing.password"))
+	sign publishing.publications.mavenJava
+}
+
 publishing {
 	repositories {
 		maven {
@@ -59,10 +81,54 @@ publishing {
 				password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
 			}
 		}
+		maven {
+
+			name = "OSSRHPackages"
+			url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+
+			credentials {
+				username = project.findProperty("ossrh.username")
+				password = project.findProperty("ossrh.password")
+			}
+
+			beforeDeployment { MavenArtifact deployment -> signing.signPom(deployment) }
+
+			snapshotRepository(url: "https://s01.oss.sonatype.org/content/repositories/snapshots/") {
+				authentication(userName: ossrhUsername, password: ossrhPassword)
+			}
+		}
 	}
+
 	publications {
-		gpr(MavenPublication) {
+		mavenJava(MavenPublication) {
 			from(components.java)
+			pom {
+				name 'netatmo4j'
+				packaging 'jar'
+				// optionally artifactId can be defined here
+				description 'Library to call Netatmo API.'
+				url 'https://github.com/konikvranik/netatmo4j'
+
+				scm {
+					connection 'scm:git:git@github.com:konikvranik/netatmo4j.git'
+					url 'https://github.com/konikvranik/netatmo4j.git'
+				}
+
+				licenses {
+					license {
+						name 'The Apache License, Version 2.0'
+						url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+					}
+				}
+
+				developers {
+					developer {
+						id 'konikvranik'
+						name 'Petr Vraník'
+						email 'petr@vranik.name'
+					}
+				}
+			}
 		}
 	}
 }
