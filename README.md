@@ -55,3 +55,5 @@ Then you can execute this command:
 If you want to visualize timeline of the schedule, you can use groovy script `src/main/groovy/scheduleRendered.groovy`.
 Pass Schedule JSON as a parameter.
 Then it will render either SVG or PlantUml source, depending on presence of the `-i` flag.
+
+Example of the result: ![](example_timeline.svg)
