@@ -68,7 +68,7 @@ artifacts {
 
 signing {
 	useInMemoryPgpKeys(findProperty("signing.key"), findProperty("signing.password"))
-	sign publishing.publications.mavenJava
+	sign publishing.publications.gpr
 }
 
 publishing {
