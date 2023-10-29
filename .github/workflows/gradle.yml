@@ -38,4 +38,4 @@ jobs:
           GPG_SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
         uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
         with:
-          arguments: publish -P"gpr.key=${{ secrets.GITHUB_TOKEN }}" -P"gpr.user=${{ github.repository_owner }}" -P"ossrh.username=${{ secrets.OSSRH_USERNAME }}" -P"ossrh.password=${{ secrets.OSSRH_PASSWORD }}" -P"signing.password=${{ secrets.SIGNING_PASSWORD }}" -i -s
+          arguments: publish -P"gpr.key=${{ secrets.GITHUB_TOKEN }}" -P"gpr.user=${{ github.repository_owner }}" -P"ossrh.username=${{ secrets.OSSRH_USERNAME }}" -P"ossrh.password=${{ secrets.OSSRH_PASSWORD }}" -P"signing.password=${{ secrets.SIGNING_PASSWORD }}" -P"signing.key=${{ secrets.SIGNING_KEY }}" -i -s
