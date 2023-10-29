@@ -89,8 +89,9 @@ publishing {
 				url = 'https://github.com/konikvranik/netatmo4j'
 
 				scm {
-					connection = 'scm:git:git@github.com:konikvranik/netatmo4j.git'
-					url = 'https://github.com/konikvranik/netatmo4j.git'
+					connection = 'scm:git:https://github.com/konikvranik/netatmo4j.git'
+					developerConnection = 'scm:git:ssh:git@github.com:konikvranik/netatmo4j.git'
+					url = 'https://github.com/konikvranik/netatmo4j/'
 				}
 
 				licenses {
