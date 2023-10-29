@@ -37,7 +37,7 @@ jobs:
       - name: Publish to GitHub Packages & Open Source Project Repository Hosting
         uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
         with:
-          arguments: publish -i -s
+          arguments: publish -Pversion=${{ github.event.release.tag_name }} -i -s
         env:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
