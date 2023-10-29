@@ -28,12 +28,8 @@ HomesData homesData = homeClient.getHomesData();
 
 ScheduleClient scheduleClient = new ScheduleClient(authClient);
 Schedule schedule = createSchedule();
-scheduleClient.
-
-updateSchedule(homeId, schedule);
-scheduleClient.
-
-setSchedule(homeId, scheduleId);
+scheduleClient.updateSchedule(homeId, schedule);
+scheduleClient.setSchedule(homeId, scheduleId);
 
 ```
 
