@@ -31,7 +31,7 @@ import picocli.CommandLine;
 @Slf4j
 @CommandLine.Command(name = "checksum", mixinStandardHelpOptions = true, version = "checksum 4.0",
 	description = "Prints the checksum (SHA-256 by default) of a file to STDOUT.")
-public class NetatmoCli implements Callable<Integer> {
+public final class NetatmoCli implements Callable<Integer> {
 
 	private static final ObjectMapper YAML_OBJECT_MAPPER = YAMLMapper.builder().enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS).build();
 	private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder().build();

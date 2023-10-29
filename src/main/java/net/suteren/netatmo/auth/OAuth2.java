@@ -23,7 +23,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j public class OAuth2 {
+@Slf4j final class OAuth2 {
 	private final CountDownLatch latch = new CountDownLatch(1);
 	@Setter @Getter private String code;
 	@Setter @Getter private String redirectUri;

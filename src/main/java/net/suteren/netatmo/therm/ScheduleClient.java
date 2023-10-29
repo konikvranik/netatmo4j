@@ -12,7 +12,7 @@ import net.suteren.netatmo.client.ConnectionException;
 import net.suteren.netatmo.client.NetatmoResponse;
 import net.suteren.netatmo.domain.therm.Schedule;
 
-public class ScheduleClient extends AbstractApiClient<InputStream> {
+public final class ScheduleClient extends AbstractApiClient<InputStream> {
 
 	public ScheduleClient(AuthClient auth) {
 		super(auth);

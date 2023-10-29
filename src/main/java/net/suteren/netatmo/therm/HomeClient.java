@@ -13,7 +13,7 @@ import net.suteren.netatmo.client.ConnectionException;
 import net.suteren.netatmo.client.NetatmoResponse;
 import net.suteren.netatmo.domain.therm.HomesData;
 
-public class HomeClient extends AbstractApiClient<InputStream> {
+public final class HomeClient extends AbstractApiClient<InputStream> {
 	public HomeClient(AuthClient auth) {
 		super(auth);
 	}

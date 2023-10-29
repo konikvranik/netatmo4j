@@ -25,7 +25,7 @@ import net.suteren.netatmo.client.ConnectionException;
 import static java.nio.file.attribute.PosixFilePermission.OWNER_READ;
 import static java.nio.file.attribute.PosixFilePermission.OWNER_WRITE;
 
-public class AuthClient extends AbstractNetatmoClient {
+public final class AuthClient extends AbstractNetatmoClient {
 
 	private final String clientId;
 	private final Object scope;
