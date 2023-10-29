@@ -38,14 +38,9 @@ compileJava {
 	options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
 }
 
-tasks.register('javadocJar', Jar) {
-	archiveClassifier = 'javadoc'
-	from javadoc
-}
-
-tasks.register('sourcesJar', Jar) {
-	archiveClassifier = 'sources'
-	from sourceSets.main.allSource
+java {
+	withSourcesJar()
+	withJavadocJar()
 }
 
 tasks.register('fatJar', Jar) {
@@ -63,7 +58,7 @@ tasks.register('fatJar', Jar) {
 
 
 artifacts {
-	archives javadocJar, sourcesJar, fatJar
+	archives fatJar
 }
 
 publishing {
@@ -92,6 +87,7 @@ publishing {
 	publications {
 		mavenJava(MavenPublication) {
 			from(components.java)
+			artifact fatJar
 			pom {
 				name = 'netatmo4j'
 				// optionally artifactId can be defined here
