@@ -95,7 +95,7 @@ publishing {
 	}
 
 	publications {
-		mavenJava(MavenPublication) {
+		gpr(MavenPublication) {
 			from(components.java)
 			pom {
 				name 'netatmo4j'
