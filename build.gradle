@@ -124,7 +124,7 @@ publishing {
 
 signing {
 	println "!!! DEBUG: (${findProperty('signing.key')}, ${findProperty('signing.password')})"
-	//useInMemoryPgpKeys(System.getenv('GPG_SIGNING_KEY'), findProperty('signing.password'))
-	useInMemoryPgpKeys(findProperty('signing.key'), findProperty('signing.password'))
+	useInMemoryPgpKeys(System.getenv('GPG_SIGNING_KEY'), findProperty('signing.password'))
+	//useInMemoryPgpKeys(findProperty('signing.key'), findProperty('signing.password'))
 	sign publishing.publications.mavenJava
 }
