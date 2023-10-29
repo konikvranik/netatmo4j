@@ -66,11 +66,6 @@ artifacts {
 	archives javadocJar, sourcesJar, fatJar
 }
 
-signing {
-	useInMemoryPgpKeys(findProperty("signing.key"), findProperty("signing.password"))
-	sign publishing.publications.gpr
-}
-
 publishing {
 	repositories {
 		maven {
@@ -95,7 +90,7 @@ publishing {
 	}
 
 	publications {
-		gpr(MavenPublication) {
+		mavenJava(MavenPublication) {
 			from(components.java)
 			pom {
 				name 'netatmo4j'
@@ -126,4 +121,9 @@ publishing {
 			}
 		}
 	}
+}
+
+signing {
+	useInMemoryPgpKeys(findProperty("signing.key"), findProperty("signing.password"))
+	sign publishing.publications.mavenJava
 }
