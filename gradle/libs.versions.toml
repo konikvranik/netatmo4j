@@ -1,5 +1,5 @@
 [versions]
-org-slf4j = "2.0.7"
+org-slf4j = "2.0.9"
 
 [libraries]
 com-fasterxml-jackson-core-jackson-databind = "com.fasterxml.jackson.core:jackson-databind:2.15.3"
