@@ -5,7 +5,6 @@ import java.util.Iterator;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,7 +17,7 @@ public class PairDeserializer extends StdDeserializer<Pair<Double, Double>> {
 		super(Pair.class);
 	}
 
-	@Override public Pair<Double, Double> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JacksonException {
+	@Override public Pair<Double, Double> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
 		Iterator<JsonNode> elements = jp.getCodec().<ArrayNode>readTree(jp).elements();
 		return Pair.of(elements.next().doubleValue(), elements.next().doubleValue());
 	}

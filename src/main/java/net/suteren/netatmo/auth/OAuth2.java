@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 	@Setter @Getter private String code;
 	@Setter @Getter private String redirectUri;
 
-	void authorize(Function<String, String> getUrl) throws URISyntaxException, IOException, InterruptedException {
+	void authorize(UnaryOperator<String> getUrl) throws URISyntaxException, IOException, InterruptedException {
 		final HttpServer server = startServer();
 		redirectUri = "http://localhost:%d/".formatted(server.getAddress().getPort());
 		String authUrl = getUrl.apply(redirectUri);
