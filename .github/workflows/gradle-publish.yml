@@ -47,3 +47,12 @@ jobs:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           GPR_USERNAME: ${{ github.repository_owner }}
           GPR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Bump Version
+        id: bump
+        uses: Plugily-Projects/version-bump-action@v6
+        with:
+          github-token: ${{ secrets.github_token }}
+          git-committer: 'BOT'
+          auto-version-bump: true
+          auto-version-bump-suffix: 'SNAPSHOT'
