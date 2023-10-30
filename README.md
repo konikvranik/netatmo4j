@@ -19,6 +19,8 @@ There is also a simple commandline client and timeline visualizer. See the secti
 
 ## Basic usage
 
+[neatmo4j artifact](https://central.sonatype.com/artifact/net.suteren.netatmo/netatmo4j) is hosted on [Maven Central](https://central.sonatype.com/)
+
 ```java
 
 AuthClient authClient =	new AuthClient(clientId, clientSecret, List.of("read_thermostat", "write_thermostat"), "Netatmo tool", authconfig);
