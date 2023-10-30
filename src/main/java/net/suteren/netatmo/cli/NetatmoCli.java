@@ -39,6 +39,7 @@ public final class NetatmoCli implements Callable<Integer> {
 	private static final ObjectMapper YAML_OBJECT_MAPPER = YAMLMapper.builder().enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS).build();
 	private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder().build();
 	public static final String HOME_S_IS_NOT_PRESENT_MESSAGE = "Home %s is not present.";
+	public static final String UNEXPECTED_VALUE_MESSAGE = "Unexpected value: %s";
 
 	@CommandLine.Parameters(arity = "1", index = "0", paramLabel = "COMMAND", description = "Command to execute")
 	private String command;
@@ -103,7 +104,7 @@ public final class NetatmoCli implements Callable<Integer> {
 						System.out.println(YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homes));
 						break;
 					default:
-						throw new IllegalStateException("Unexpected value: " + format);
+						throw new IllegalStateException(UNEXPECTED_VALUE_MESSAGE.formatted(format));
 					}
 					break;
 				case "rooms":
@@ -123,7 +124,7 @@ public final class NetatmoCli implements Callable<Integer> {
 						System.out.println(YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(rooms));
 						break;
 					default:
-						throw new IllegalStateException("Unexpected value: " + format);
+						throw new IllegalStateException(UNEXPECTED_VALUE_MESSAGE.formatted(format));
 					}
 					break;
 				case "schedules":
@@ -150,11 +151,11 @@ public final class NetatmoCli implements Callable<Integer> {
 								.toList()));
 						break;
 					default:
-						throw new IllegalStateException("Unexpected value: " + format);
+						throw new IllegalStateException(UNEXPECTED_VALUE_MESSAGE.formatted(format));
 					}
 					break;
 				default:
-					throw new IllegalStateException("Unexpected value: " + arguments[0]);
+					throw new IllegalStateException(UNEXPECTED_VALUE_MESSAGE.formatted(arguments[0]));
 				}
 				break;
 			case "get":
@@ -183,7 +184,7 @@ public final class NetatmoCli implements Callable<Integer> {
 								.toList()));
 						break;
 					default:
-						throw new IllegalStateException("Unexpected value: " + format);
+						throw new IllegalStateException(UNEXPECTED_VALUE_MESSAGE.formatted(format));
 					}
 					break;
 				case "homesdata":
@@ -201,12 +202,12 @@ public final class NetatmoCli implements Callable<Integer> {
 						System.out.println(YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homesData));
 						break;
 					default:
-						throw new IllegalStateException("Unexpected value: " + format);
+						throw new IllegalStateException(UNEXPECTED_VALUE_MESSAGE.formatted(format));
 					}
 					break;
 
 				default:
-					throw new IllegalStateException("Unexpected value: " + arguments[0]);
+					throw new IllegalStateException(UNEXPECTED_VALUE_MESSAGE.formatted(arguments[0]));
 				}
 				break;
 			case "update":
@@ -235,7 +236,7 @@ public final class NetatmoCli implements Callable<Integer> {
 				);
 				break;
 			default:
-				throw new IllegalStateException("Unexpected value: " + command);
+				throw new IllegalStateException(UNEXPECTED_VALUE_MESSAGE.formatted(command));
 			}
 		} catch (ConnectionException e) {
 			log.error("%d: %s".formatted(e.getErrorInfo().code(), e.getErrorInfo().message()));
