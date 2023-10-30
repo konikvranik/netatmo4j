@@ -102,6 +102,8 @@ public final class NetatmoCli implements Callable<Integer> {
 					case "yaml":
 						System.out.println(YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homes));
 						break;
+					default:
+						throw new IllegalStateException("Unexpected value: " + format);
 					}
 					break;
 				case "rooms":
@@ -120,6 +122,8 @@ public final class NetatmoCli implements Callable<Integer> {
 					case "yaml":
 						System.out.println(YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(rooms));
 						break;
+					default:
+						throw new IllegalStateException("Unexpected value: " + format);
 					}
 					break;
 				case "schedules":
@@ -178,6 +182,8 @@ public final class NetatmoCli implements Callable<Integer> {
 								.schedules().stream()
 								.toList()));
 						break;
+					default:
+						throw new IllegalStateException("Unexpected value: " + format);
 					}
 					break;
 				case "homesdata":
@@ -194,9 +200,13 @@ public final class NetatmoCli implements Callable<Integer> {
 					case "yaml":
 						System.out.println(YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(homesData));
 						break;
+					default:
+						throw new IllegalStateException("Unexpected value: " + format);
 					}
 					break;
 
+				default:
+					throw new IllegalStateException("Unexpected value: " + arguments[0]);
 				}
 				break;
 			case "update":
@@ -224,6 +234,8 @@ public final class NetatmoCli implements Callable<Integer> {
 					() -> {throw new NoSuchElementException(HOME_S_IS_NOT_PRESENT_MESSAGE.formatted(homeId));}
 				);
 				break;
+			default:
+				throw new IllegalStateException("Unexpected value: " + command);
 			}
 		} catch (ConnectionException e) {
 			log.error("%d: %s".formatted(e.getErrorInfo().code(), e.getErrorInfo().message()));
