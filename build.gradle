@@ -50,13 +50,6 @@ jacocoTestReport {
 	}
 }
 
-jacocoTestReport {
-	reports {
-		xml.required = true
-		html.required = false
-	}
-}
-
 tasks.register('fatJar', Jar) {
 	manifest {
 		attributes 'Main-Class': 'net.suteren.netatmo.cli.NetatmoCli'
