@@ -40,6 +40,14 @@ java {
 
 test {
 	finalizedBy jacocoTestReport // report is always generated after tests run
+	useJUnitPlatform()
+}
+
+jacocoTestReport {
+	reports {
+		xml.required = true
+		html.required = false
+	}
 }
 
 jacocoTestReport {
