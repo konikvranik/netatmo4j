@@ -27,6 +27,14 @@ import static java.nio.file.attribute.PosixFilePermission.OWNER_WRITE;
 
 public final class AuthClient extends AbstractNetatmoClient {
 
+	public static final String CLIENT_ID_PARAM_NAME = "client_id";
+	public static final String REDIRECT_URI_PARAM_NAME = "redirect_uri";
+	public static final String SCOPE_PARAM_NAME = "scope";
+	public static final String STATE_PARAM_NAME = "state";
+	public static final String CLIENT_SECRET_PARAM_NAME = "client_secret";
+	public static final String REFRESH_TOKEN_PARAM_NAME = "refresh_token";
+	public static final String REFRESH_TOKEN_GRANT_TYPE = "refresh_token";
+	public static final String GRANT_TYPE_PARAM_NAME = "grant_type";
 	private final String clientId;
 	private final Collection<Scope> scope;
 	private final String state;
@@ -45,7 +53,7 @@ public final class AuthClient extends AbstractNetatmoClient {
 	 * @param clientId `client_id` used to retrieve the authentication token.
 	 * @param clientSecret `client_secret` used to retrieve the authentication token.
 	 * @param scope scopes to authorize to.
-	 * If no scope is provided during the token request, the default is {@link Scope#read_station}
+	 * If no scope is provided during the token request, the default is {@link Scope#READ_STATION}
 	 * @param state to prevent Cross-site Request Forgery.
 	 * @param authFile local file to store tokens to. This file should be protected from unauthorized reading.
 	 * @throws IOException in case of connection problems of problems accessing the `authFile`.
@@ -81,11 +89,11 @@ public final class AuthClient extends AbstractNetatmoClient {
 	 * @return URL to open in the browser.
 	 */
 	public String authorizeUrl(String redirectUri) {
-		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>(4);
-		map.put("client_id", clientId);
-		map.put("redirect_uri", redirectUri);
-		map.put("scope", renderScope(scope));
-		map.put("state", state);
+		LinkedHashMap<String, String> map = new LinkedHashMap<>(4);
+		map.put(CLIENT_ID_PARAM_NAME, clientId);
+		map.put(REDIRECT_URI_PARAM_NAME, redirectUri);
+		map.put(SCOPE_PARAM_NAME, renderScope(scope));
+		map.put(STATE_PARAM_NAME, state);
 		return constructUrl("oauth2/authorize", map);
 	}
 
@@ -101,20 +109,20 @@ public final class AuthClient extends AbstractNetatmoClient {
 	public String getToken() throws URISyntaxException, IOException, InterruptedException, ConnectionException {
 		if (accessToken == null) {
 			oauth.authorize(this::authorizeUrl);
-			LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>(6);
-			parameters.put("grant_type", "authorization_code");
-			parameters.put("client_id", clientId);
-			parameters.put("client_secret", clientSecret);
+			LinkedHashMap<String, String> parameters = new LinkedHashMap<>(6);
+			parameters.put(GRANT_TYPE_PARAM_NAME, "authorization_code");
+			parameters.put(CLIENT_ID_PARAM_NAME, clientId);
+			parameters.put(CLIENT_SECRET_PARAM_NAME, clientSecret);
 			parameters.put("code", oauth.getCode());
-			parameters.put("redirect_uri", oauth.getRedirectUri());
-			parameters.put("scope", renderScope(scope));
+			parameters.put(REDIRECT_URI_PARAM_NAME, oauth.getRedirectUri());
+			parameters.put(SCOPE_PARAM_NAME, renderScope(scope));
 			token(parameters);
 		} else if (validUntil.isBefore(Instant.now().minus(1, ChronoUnit.MINUTES))) {
-			LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>(4);
-			parameters.put("grant_type", "refresh_token");
-			parameters.put("client_id", clientId);
-			parameters.put("client_secret", clientSecret);
-			parameters.put("refresh_token", refreshToken);
+			LinkedHashMap<String, String> parameters = new LinkedHashMap<>(4);
+			parameters.put(GRANT_TYPE_PARAM_NAME, REFRESH_TOKEN_PARAM_NAME);
+			parameters.put(CLIENT_ID_PARAM_NAME, clientId);
+			parameters.put(CLIENT_SECRET_PARAM_NAME, clientSecret);
+			parameters.put(REFRESH_TOKEN_GRANT_TYPE, refreshToken);
 			token(parameters);
 		}
 
@@ -127,12 +135,12 @@ public final class AuthClient extends AbstractNetatmoClient {
 		accessToken = response.at("/access_token").textValue();
 		refreshToken = response.at("/refresh_token").textValue();
 		validUntil = Instant.now().plusSeconds(response.at("/expires_in").longValue());
-		LinkedHashMap<String, Serializable> result = new LinkedHashMap<String, Serializable>(5);
+		LinkedHashMap<String, Serializable> result = new LinkedHashMap<>(5);
 		result.put("access_token", getAccessToken());
-		result.put("refresh_token", getRefreshToken());
+		result.put(REFRESH_TOKEN_GRANT_TYPE, getRefreshToken());
 		result.put("valid_until", getValidUntil().getEpochSecond());
-		result.put("client_id", clientId);
-		result.put("client_secret", clientSecret);
+		result.put(CLIENT_ID_PARAM_NAME, clientId);
+		result.put(CLIENT_SECRET_PARAM_NAME, clientSecret);
 		try (FileWriter w = new FileWriter(authFile)) {
 			OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue(w, result);
 		}
@@ -153,53 +161,53 @@ public final class AuthClient extends AbstractNetatmoClient {
 		/**
 		 * to retrieve weather station data (Getstationsdata, Getmeasure)
 		 */
-		read_station,
+		READ_STATION,
 
 		/**
 		 * to retrieve thermostat data ( Homestatus, Getroommeasure...)
 		 */
-		read_thermostat,
+		READ_THERMOSTAT,
 
 		/**
 		 * to set up the thermostat (Synchomeschedule, Setroomthermpoint...)
 		 */
-		write_thermostat,
+		WRITE_THERMOSTAT,
 
 		/**
 		 * to retrieve Smart Indoor Cameradata (Gethomedata, Getcamerapicture...)
 		 */
-		read_camera,
+		READ_CAMERA,
 
 		/**
 		 * to inform the Smart Indoor Camera that a specific person or everybody has left the Home (Setpersonsaway, Setpersonshome)
 		 */
-		write_camera,
+		WRITE_CAMERA,
 
 		/**
 		 * to access the camera, the videos and the live stream.
 		 * Netatmo cares a lot about users privacy and security. The "access" scope grants you access to sensitive data and is delivered by Netatmo teams on a per-app basis. To submit an access scope request, see <a href="https://dev.netatmo.com/request-scope-form">here</a>.
 		 */
-		access_camera,
+		ACCESS_CAMERA,
 
 		/**
 		 * to retrieve Smart Outdoor Camera data (Gethomedata, Getcamerapicture...)
 		 */
-		read_presence,
+		READ_PRESENCE,
 
 		/**
 		 * to access the camera, the videos and the live stream.
 		 * Netatmo cares a lot about users privacy and security. The "access" scope grants you access to sensitive data and is delivered by Netatmo teams on a per-app basis. To submit an access scope request, see <a href="https://dev.netatmo.com/request-scope-form">here</a>.
 		 */
-		access_presence,
+		ACCESS_PRESENCE,
 
 		/**
 		 * to retrieve the Smart Smoke Alarm informations and events (Gethomedata, Geteventsuntil...)
 		 */
-		read_smokedetector,
+		READ_SMOKEDETECTOR,
 
 		/**
 		 * to read data coming from Smart Indoor Air Quality Monitor (gethomecoachsdata)
 		 */
-		read_homecoach,
+		READ_HOMECOACH,
 	}
 }

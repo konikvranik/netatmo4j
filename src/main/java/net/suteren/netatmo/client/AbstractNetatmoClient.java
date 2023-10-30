@@ -3,7 +3,6 @@ package net.suteren.netatmo.client;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -101,7 +100,7 @@ public abstract class AbstractNetatmoClient {
 		return url.startsWith("/") ? url : ("/" + url);
 	}
 
-	public static String urlEncode(String value, Charset charset) throws UnsupportedEncodingException {
+	public static String urlEncode(String value, Charset charset) {
 		return URLEncoder.encode(value, charset);
 	}
 

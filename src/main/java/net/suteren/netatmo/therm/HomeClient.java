@@ -1,7 +1,6 @@
 package net.suteren.netatmo.therm;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Map;
 
@@ -13,7 +12,7 @@ import net.suteren.netatmo.client.ConnectionException;
 import net.suteren.netatmo.client.NetatmoResponse;
 import net.suteren.netatmo.domain.therm.HomesData;
 
-public final class HomeClient extends AbstractApiClient<InputStream> {
+public final class HomeClient extends AbstractApiClient {
 	public HomeClient(AuthClient auth) {
 		super(auth);
 	}

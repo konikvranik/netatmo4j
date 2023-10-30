@@ -10,7 +10,7 @@ import org.apache.commons.collections4.MapUtils;
 
 import net.suteren.netatmo.auth.AuthClient;
 
-public class AbstractApiClient<T> extends AbstractNetatmoClient {
+public class AbstractApiClient extends AbstractNetatmoClient {
 	public AbstractApiClient(AuthClient auth) {
 		this.auth = auth;
 	}

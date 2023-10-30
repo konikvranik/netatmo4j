@@ -28,8 +28,8 @@ import net.suteren.netatmo.therm.HomeClient;
 import net.suteren.netatmo.therm.ScheduleClient;
 import picocli.CommandLine;
 
-import static net.suteren.netatmo.auth.AuthClient.Scope.read_thermostat;
-import static net.suteren.netatmo.auth.AuthClient.Scope.write_thermostat;
+import static net.suteren.netatmo.auth.AuthClient.Scope.READ_THERMOSTAT;
+import static net.suteren.netatmo.auth.AuthClient.Scope.WRITE_THERMOSTAT;
 
 @Slf4j
 @CommandLine.Command(name = "checksum", mixinStandardHelpOptions = true, version = "checksum 4.0",
@@ -38,6 +38,7 @@ public final class NetatmoCli implements Callable<Integer> {
 
 	private static final ObjectMapper YAML_OBJECT_MAPPER = YAMLMapper.builder().enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS).build();
 	private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder().build();
+	public static final String HOME_S_IS_NOT_PRESENT_MESSAGE = "Home %s is not present.";
 
 	@CommandLine.Parameters(arity = "1", index = "0", paramLabel = "COMMAND", description = "Command to execute")
 	private String command;
@@ -76,7 +77,7 @@ public final class NetatmoCli implements Callable<Integer> {
 		}
 
 		try {
-			AuthClient authClient = new AuthClient(clientId, clientSecret, List.of(read_thermostat, write_thermostat), "Netatmo tool", authconfig);
+			AuthClient authClient = new AuthClient(clientId, clientSecret, List.of(READ_THERMOSTAT, WRITE_THERMOSTAT), "Netatmo tool", authconfig);
 			CliCfg cfg = YAML_OBJECT_MAPPER.readValue(config, CliCfg.class);
 			if (homeId == null) {
 				homeId = cfg.homeId();
@@ -105,7 +106,7 @@ public final class NetatmoCli implements Callable<Integer> {
 					break;
 				case "rooms":
 					List<Room> rooms = currentHome
-						.orElseThrow(() -> new NoSuchElementException("Home %s is not present.".formatted(homeId)))
+						.orElseThrow(() -> new NoSuchElementException(HOME_S_IS_NOT_PRESENT_MESSAGE.formatted(homeId)))
 						.rooms();
 					switch (format) {
 					case "text":
@@ -125,7 +126,7 @@ public final class NetatmoCli implements Callable<Integer> {
 					switch (format) {
 					case "text":
 						System.out.println(currentHome
-							.orElseThrow(() -> new NoSuchElementException("Home %s is not present.".formatted(homeId)))
+							.orElseThrow(() -> new NoSuchElementException(HOME_S_IS_NOT_PRESENT_MESSAGE.formatted(homeId)))
 							.schedules().stream()
 							.map(h -> "%25s : %s".formatted(h.getId(), h.name()))
 							.collect(Collectors.joining("\n")));
@@ -133,19 +134,23 @@ public final class NetatmoCli implements Callable<Integer> {
 					case "json":
 						System.out.println(
 							OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(currentHome
-								.orElseThrow(() -> new NoSuchElementException("Home %s is not present.".formatted(homeId)))
+								.orElseThrow(() -> new NoSuchElementException(HOME_S_IS_NOT_PRESENT_MESSAGE.formatted(homeId)))
 								.schedules().stream()
 								.toList()));
 						break;
 					case "yaml":
 						System.out.println(
 							YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(currentHome
-								.orElseThrow(() -> new NoSuchElementException("Home %s is not present.".formatted(homeId)))
+								.orElseThrow(() -> new NoSuchElementException(HOME_S_IS_NOT_PRESENT_MESSAGE.formatted(homeId)))
 								.schedules().stream()
 								.toList()));
 						break;
+					default:
+						throw new IllegalStateException("Unexpected value: " + format);
 					}
 					break;
+				default:
+					throw new IllegalStateException("Unexpected value: " + arguments[0]);
 				}
 				break;
 			case "get":
@@ -154,7 +159,7 @@ public final class NetatmoCli implements Callable<Integer> {
 					switch (format) {
 					case "text":
 						System.out.println(currentHome
-							.orElseThrow(() -> new NoSuchElementException("Home %s is not present.".formatted(homeId)))
+							.orElseThrow(() -> new NoSuchElementException(HOME_S_IS_NOT_PRESENT_MESSAGE.formatted(homeId)))
 							.schedules().stream()
 							.map(h -> "%25s : %s".formatted(h.getId(), h.name()))
 							.collect(Collectors.joining("\n")));
@@ -162,14 +167,14 @@ public final class NetatmoCli implements Callable<Integer> {
 					case "json":
 						System.out.println(
 							OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(currentHome
-								.orElseThrow(() -> new NoSuchElementException("Home %s is not present.".formatted(homeId)))
+								.orElseThrow(() -> new NoSuchElementException(HOME_S_IS_NOT_PRESENT_MESSAGE.formatted(homeId)))
 								.schedules().stream()
 								.toList()));
 						break;
 					case "yaml":
 						System.out.println(
 							YAML_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(currentHome
-								.orElseThrow(() -> new NoSuchElementException("Home %s is not present.".formatted(homeId)))
+								.orElseThrow(() -> new NoSuchElementException(HOME_S_IS_NOT_PRESENT_MESSAGE.formatted(homeId)))
 								.schedules().stream()
 								.toList()));
 						break;
@@ -210,13 +215,13 @@ public final class NetatmoCli implements Callable<Integer> {
 							log.info("{}: {} in {} seconds", response.getServerTime().toString(), response.status(), response.timeExec());
 						} catch (IOException | InterruptedException | URISyntaxException e) {
 							log.error(e.getMessage(), e);
-							throw new RuntimeException(e);
+							throw new UnexpectedException(e);
 						} catch (ConnectionException e) {
 							log.error("%d: %s".formatted(e.getErrorInfo().code(), e.getErrorInfo().message()));
-							throw new RuntimeException(e);
+							throw new UnexpectedException(e);
 						}
 					}),
-					() -> {throw new NoSuchElementException("Home %s is not present.".formatted(homeId));}
+					() -> {throw new NoSuchElementException(HOME_S_IS_NOT_PRESENT_MESSAGE.formatted(homeId));}
 				);
 				break;
 			}

@@ -1,7 +1,6 @@
 package net.suteren.netatmo.therm;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Optional;
@@ -12,7 +11,7 @@ import net.suteren.netatmo.client.ConnectionException;
 import net.suteren.netatmo.client.NetatmoResponse;
 import net.suteren.netatmo.domain.therm.Schedule;
 
-public final class ScheduleClient extends AbstractApiClient<InputStream> {
+public final class ScheduleClient extends AbstractApiClient {
 
 	public ScheduleClient(AuthClient auth) {
 		super(auth);
