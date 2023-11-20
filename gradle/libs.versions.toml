@@ -1,5 +1,5 @@
 [versions]
-com-fasterxml-jackson = "2.15.3"
+com-fasterxml-jackson = "2.16.0"
 info-picocli = "4.7.5"
 org-slf4j = "2.0.9"
 
