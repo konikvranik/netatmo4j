@@ -7,9 +7,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import lombok.Getter;
 
+/**
+ * Exception aware of the reason of failed connection.
+ */
 @Getter public class ConnectionException extends Exception {
 
-	private final transient  HttpURLConnection connection;
+	private final transient HttpURLConnection connection;
 	private final NetatmoError.NetatmoErrorInfo errorInfo;
 
 	public ConnectionException(HttpURLConnection connection, NetatmoError.NetatmoErrorInfo errorInfo) throws IOException {

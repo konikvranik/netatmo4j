@@ -12,6 +12,9 @@ import net.suteren.netatmo.client.ConnectionException;
 import net.suteren.netatmo.client.NetatmoResponse;
 import net.suteren.netatmo.domain.therm.HomesData;
 
+/**
+ * Netatmo API client to retrieve the home data.
+ */
 public final class HomeClient extends AbstractApiClient {
 	public HomeClient(AuthClient auth) {
 		super(auth);

@@ -4,9 +4,9 @@
 		@Grab('info.picocli:picocli-groovy:4.7.3'),
 		@Grab('org.slf4j:slf4j-simple:2.0.7'),
 		@Grab('net.sourceforge.plantuml:plantuml:1.2023.10'),
-		@Grab('net.suteren.netatmo:netatmo4j:0.3')
+		@Grab('net.suteren.netatmo:netatmo4j:0.4.0')
 ])
-@picocli.CommandLine.Command(name = "myCommand", description = "does something special")
+@picocli.CommandLine.Command(name = "netatmoScheduleRenderer", description = "Visualize Netatmo schedule times.", mixinStandardHelpOptions = true)
 @picocli.groovy.PicocliScript2
 
 import com.fasterxml.jackson.databind.json.JsonMapper

@@ -10,13 +10,16 @@ import org.apache.commons.collections4.MapUtils;
 
 import net.suteren.netatmo.auth.AuthClient;
 
+/**
+ * Extends the generic client by authorization information.
+ * Using this client, <code>Authorization: Bearer $TOKEN</code> is added to the request.
+ */
 public class AbstractApiClient extends AbstractNetatmoClient {
 	public AbstractApiClient(AuthClient auth) {
 		this.auth = auth;
 	}
 
-	@Override
-	protected InputStream callNetatmo(String method, String path, Object content, String contentType,
+	@Override protected InputStream callNetatmo(String method, String path, Object content, String contentType,
 		Map<String, String> params, Map<String, String> headers)
 		throws IOException, ConnectionException, URISyntaxException, InterruptedException {
 		if (MapUtils.isEmpty(headers)) {

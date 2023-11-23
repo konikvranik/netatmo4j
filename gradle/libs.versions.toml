@@ -6,6 +6,7 @@ org-slf4j = "2.0.9"
 [libraries]
 com-fasterxml-jackson-core-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "com-fasterxml-jackson" }
 com-fasterxml-jackson-dataformat-jackson-dataformat-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version.ref = "com-fasterxml-jackson" }
+com-vdurmont-semver4j = "com.vdurmont:semver4j:3.1.0"
 info-picocli = { module = "info.picocli:picocli", version.ref = "info-picocli" }
 info-picocli-picocli-codegen = { module = "info.picocli:picocli-codegen", version.ref = "info-picocli" }
 org-apache-commons-commons-collections4 = "org.apache.commons:commons-collections4:4.4"
