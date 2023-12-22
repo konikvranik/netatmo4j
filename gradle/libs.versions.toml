@@ -22,4 +22,4 @@ org-slf4j-slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "org
 [plugins]
 com-github-ben-manes-versions = "com.github.ben-manes.versions:0.50.0"
 io-freefair-lombok = "io.freefair.lombok:8.4"
-nl-littlerobots-version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.1"
+nl-littlerobots-version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.2"
