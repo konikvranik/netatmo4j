@@ -3,6 +3,7 @@ package net.suteren.netatmo.cli;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.simple.SimpleLogger;
 
@@ -86,6 +87,12 @@ public final class NetatmoCli extends AbstractCommand {
 	@Override public CliCfg getCfg() {
 		if (cfg == null) {
 			try {
+				if (!config.exists()) {
+					if (!(config.getParentFile().mkdirs() && config.createNewFile())) {
+						throw new RuntimeException("Unable to create config file");
+					}
+					yamlMapper.writeValue(config, new CliCfg("-1", new TemperatureCfg(-1, -1, -1, Map.of()), Map.of()));
+				}
 				cfg = yamlMapper.readValue(config, CliCfg.class);
 			} catch (IOException e) {
 				log.error("There is a problem reading the config file: ".concat(e.getMessage()));
