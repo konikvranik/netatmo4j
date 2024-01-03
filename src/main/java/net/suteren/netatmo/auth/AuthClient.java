@@ -50,12 +50,12 @@ public final class AuthClient extends AbstractNetatmoClient {
 	 * It is required by {@link net.suteren.netatmo.client.AbstractApiClient} to provide valid `Authentication` token.
 	 * See <a href="https://dev.netatmo.com/apidocumentation/oauth">Netatmo Authentication</a> for more details.
 	 *
-	 * @param clientId     `client_id` used to retrieve the authentication token.
+	 * @param clientId `client_id` used to retrieve the authentication token.
 	 * @param clientSecret `client_secret` used to retrieve the authentication token.
-	 * @param scope        scopes to authorize to.
-	 *                     If no scope is provided during the token request, the default is {@link Scope#READ_STATION}
-	 * @param state        to prevent Cross-site Request Forgery.
-	 * @param authFile     local file to store tokens to. This file should be protected from unauthorized reading.
+	 * @param scope scopes to authorize to.
+	 * If no scope is provided during the token request, the default is {@link Scope#READ_STATION}
+	 * @param state to prevent Cross-site Request Forgery.
+	 * @param authFile local file to store tokens to. This file should be protected from unauthorized reading.
 	 * @throws IOException in case of connection problems of problems accessing the `authFile`.
 	 */
 	public AuthClient(String clientId, String clientSecret, Collection<Scope> scope, String state, File authFile) throws IOException {
@@ -89,7 +89,7 @@ public final class AuthClient extends AbstractNetatmoClient {
 	 * @return URL to open in the browser.
 	 */
 	public String authorizeUrl(String redirectUri) {
-		LinkedHashMap<String, String> map = LinkedHashMap.newLinkedHashMap(4);
+		LinkedHashMap<String, String> map = new LinkedHashMap<>(4);
 		map.put(CLIENT_ID_PARAM_NAME, clientId);
 		map.put(REDIRECT_URI_PARAM_NAME, redirectUri);
 		map.put(SCOPE_PARAM_NAME, renderScope(scope));
@@ -102,14 +102,14 @@ public final class AuthClient extends AbstractNetatmoClient {
 	 * If there is no authorization token in the cache, start OAuth2 process to log in and retrieve the token.
 	 *
 	 * @return authorization token
-	 * @throws URISyntaxException  if {@link #authorizeUrl(String)} return wrong URL.
-	 * @throws IOException         in the case of local callback server issues.
+	 * @throws URISyntaxException if {@link #authorizeUrl(String)} return wrong URL.
+	 * @throws IOException in the case of local callback server issues.
 	 * @throws ConnectionException in case of error from Netatmo API server during retrieving the token.
 	 */
 	public String getToken() throws URISyntaxException, IOException, InterruptedException, ConnectionException {
 		if (accessToken == null) {
 			oauth.authorize(this::authorizeUrl);
-			LinkedHashMap<String, String> parameters =  LinkedHashMap.newLinkedHashMap(6);
+			LinkedHashMap<String, String> parameters = new LinkedHashMap<>(6);
 			parameters.put(GRANT_TYPE_PARAM_NAME, "authorization_code");
 			parameters.put(CLIENT_ID_PARAM_NAME, clientId);
 			parameters.put(CLIENT_SECRET_PARAM_NAME, clientSecret);
@@ -118,7 +118,7 @@ public final class AuthClient extends AbstractNetatmoClient {
 			parameters.put(SCOPE_PARAM_NAME, renderScope(scope));
 			token(parameters);
 		} else if (validUntil.isBefore(Instant.now().minus(1, ChronoUnit.MINUTES))) {
-			LinkedHashMap<String, String> parameters =  LinkedHashMap.newLinkedHashMap(4);
+			LinkedHashMap<String, String> parameters = new LinkedHashMap<>(4);
 			parameters.put(GRANT_TYPE_PARAM_NAME, REFRESH_TOKEN_PARAM_NAME);
 			parameters.put(CLIENT_ID_PARAM_NAME, clientId);
 			parameters.put(CLIENT_SECRET_PARAM_NAME, clientSecret);
@@ -135,7 +135,7 @@ public final class AuthClient extends AbstractNetatmoClient {
 		accessToken = response.at("/access_token").textValue();
 		refreshToken = response.at("/refresh_token").textValue();
 		validUntil = Instant.now().plusSeconds(response.at("/expires_in").longValue());
-		LinkedHashMap<String, Serializable> result =  LinkedHashMap.newLinkedHashMap(5);
+		LinkedHashMap<String, Serializable> result = new LinkedHashMap<>(5);
 		result.put("access_token", getAccessToken());
 		result.put(REFRESH_TOKEN_GRANT_TYPE, getRefreshToken());
 		result.put("valid_until", getValidUntil().getEpochSecond());
