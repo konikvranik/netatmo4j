@@ -1,7 +1,7 @@
 [versions]
 com-fasterxml-jackson = "2.16.1"
 info-picocli = "4.7.5"
-org-slf4j = "2.0.10"
+org-slf4j = "2.0.11"
 
 [libraries]
 com-fasterxml-jackson-core-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "com-fasterxml-jackson" }
