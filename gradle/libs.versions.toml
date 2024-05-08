@@ -1,6 +1,6 @@
 [versions]
 com-fasterxml-jackson = "2.17.1"
-info-picocli = "4.7.5"
+info-picocli = "4.7.6"
 org-slf4j = "2.0.13"
 
 [libraries]
