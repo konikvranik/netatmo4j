@@ -18,6 +18,7 @@ org-junit-jupiter-junit-jupiter = "org.junit.jupiter:junit-jupiter:5.11.4"
 org-projectlombok-lombok = "org.projectlombok:lombok:1.18.36"
 org-slf4j-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "org-slf4j" }
 org-slf4j-slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "org-slf4j" }
+org-apache-ivy = "org.apache.ivy:ivy:2.5.3"
 
 [plugins]
 com-github-ben-manes-versions = "com.github.ben-manes.versions:0.51.0"

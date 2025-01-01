@@ -14,5 +14,6 @@ public record Zone(
 	String name,
 	int type,
 	@JsonProperty("rooms_temp") List<RoomTemp> roomstemp,
-	List<Room> rooms
+	List<Room> rooms,
+	List<Module> modules
 ) {}

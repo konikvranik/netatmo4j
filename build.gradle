@@ -23,6 +23,7 @@ dependencies {
 	implementation libs.info.picocli
 	implementation libs.com.fasterxml.jackson.dataformat.jackson.dataformat.yaml
 	implementation libs.com.vdurmont.semver4j
+	implementation libs.org.apache.ivy
 
 	annotationProcessor libs.info.picocli.picocli.codegen
 
@@ -37,6 +38,9 @@ compileJava {
 java {
 	withSourcesJar()
 	withJavadocJar()
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
 }
 
 test {
