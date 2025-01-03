@@ -29,7 +29,7 @@ jobs:
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
-      - uses: gradle/gradle-build-action@v3
+      - uses: gradle/actions/setup-gradle@v4
         id: setup-gradle
         with:
           gradle-version: current
@@ -37,9 +37,7 @@ jobs:
         run: gradle build -i -s
 
       - name: Publish to GitHub Packages & Open Source Project Repository Hosting
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: publish -Pversion=${{ github.event.release.tag_name }} -i -s
+        run: gradle publish -Pversion=${{ github.event.release.tag_name }} -i -s
         env:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ secrets.GITHUB_TOKEN }}

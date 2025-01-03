@@ -28,7 +28,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'corretto'
-      - uses: gradle/gradle-build-action@v3
+      - uses: gradle/actions/setup-gradle@v4
         id: setup-gradle
         with:
           gradle-version: current
