@@ -45,7 +45,7 @@ jobs:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           GPG_SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          OSSRH_USER: ${{ secrets.OSSRH_USER }}
           GPR_USERNAME: ${{ github.repository_owner }}
           GPR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
