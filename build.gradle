@@ -95,8 +95,8 @@ publishing {
 					: "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
 
 			credentials {
-				username = project.findProperty("ossrh.username") ?: System.getenv("OSSRH_USERNAME")
-				password = project.findProperty("ossrh.password") ?: System.getenv("OSSRH_PASSWORD")
+				username = project.findProperty("ossrh.username") ?: System.getenv("OSSRH_USER")
+				password = project.findProperty("ossrh.password") ?: System.getenv("OSSRH_TOKEN")
 			}
 		}
 	}
