@@ -109,12 +109,12 @@ publishing {
 				name = 'netatmo4j'
 				// optionally artifactId can be defined here
 				description = 'Library to call Netatmo API.'
-				url = 'https://github.com/konikvranik/netatmo4j'
+				url = 'https://github.com/SuTeren/netatmo4j'
 
 				scm {
-					connection = 'scm:git:https://github.com/konikvranik/netatmo4j.git'
-					developerConnection = 'scm:git:ssh:git@github.com:konikvranik/netatmo4j.git'
-					url = 'https://github.com/konikvranik/netatmo4j/'
+					connection = 'scm:git:https://github.com/SuTeren/netatmo4j.git'
+					developerConnection = 'scm:git:ssh:git@github.com:SuTeren/netatmo4j.git'
+					url = 'https://github.com/SuTeren/netatmo4j/'
 				}
 
 				licenses {
